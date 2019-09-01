@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+        <property name="table1" value="menu"/>
+
+        <!--开启二级缓存,开发时不建议开启，会导致数据一致性问题，待部署的时候在开启-->
+        <!--<plugin type="org.mybatis.generator.plugins.CachePlugin"/>-->
+        <!--实体类序列化接口实现，上面那个开启了，这个也必须开启-->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!-- 配置是否生成注释 true表示不生成注释 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!--************************************从这里开始配置****************************************************-->
+        <!-- 配置jdbc的四个参数 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1/video?characterEncoding=utf8"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+
+        <!-- 配置是否使用java里的BigDecimal类型去映射数据库里面的decimal类型  -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="true"/>
+        </javaTypeResolver>
+
+        <!-- 配置生成的java实体类存放的位置C:\Users\HP\IdeaProjects\resources\src\main\java -->
+        <javaModelGenerator targetPackage="com.ahjrlc.video.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 配置mapper.xml文件存放的位置-->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- 配置mapper.java文件存放的位置-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.ahjrlc.video.dao"
+                             targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!-- 配置需要逆向工程的数据库表格-->
+
+        <!--        用户表-->
+<!--        <table tableName="user" domainObjectName="User">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+        <table tableName="config" domainObjectName="Config">
+            <property name="useActualColumnNames" value="false"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+<!--        <table tableName="type" domainObjectName="Type">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+<!--        <table tableName="video" domainObjectName="Video">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+<!--        <table tableName="comment" domainObjectName="Comment">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+<!--        <table tableName="notice" domainObjectName="Notice">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+    </context>
+</generatorConfiguration>
