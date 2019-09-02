@@ -1,5 +1,7 @@
 package com.ahjrlc.generator.service;
 
+import com.ahjrlc.util.LayUiTable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +22,18 @@ public interface TableService {
     /**
      * 列出数据库表名为tableName的数据库中所有表
      *
+     * @param dbName    数据库名
      * @param tableName 表名
      * @return 列
      */
-    List<Map> listColumns(String tableName);
+    LayUiTable getLayUiTable(String dbName, String tableName);
+
+    /**
+     * 列出数据库表名为tableName的表的comment
+     *
+     * @param dbName    数据库名
+     * @param tableName 表名
+     * @return
+     */
+    String getTableComment(String dbName, String tableName);
 }

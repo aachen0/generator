@@ -1,21 +1,30 @@
 package com.ahjrlc.util;
 
 
+import com.ahjrlc.generator.service.TableService;
+import com.ahjrlc.generator.service.impl.TableServiceImpl;
+
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+
+import static com.ahjrlc.util.CommonUtil.camel;
+import static com.ahjrlc.util.CommonUtil.toJavaType;
 
 /**
  * @author aachen0
  */
 public class CodeGenerator {
+    private TableService tableService = new TableServiceImpl();
     private String projectDir;
     private String basePackage;
+    private String dbName;
 
     public CodeGenerator() {
         ResourceBundle config = ResourceBundle.getBundle("config");
         this.projectDir = config.getString("project.base.dir");
         this.basePackage = config.getString("base.package");
+        this.dbName = config.getString("db.name");
     }
 
     public CodeGenerator(String projectDir, String basePackage) {
@@ -25,26 +34,25 @@ public class CodeGenerator {
 
     public static void main(String[] args) {
         CodeGenerator generator = new CodeGenerator();
-        String modelDesc = "视频资源";
         String urlBase = "/admin/video";
         String searchField = "Title";
-        String searchFieldDesc = "视频名称";
-
-        generator.generateControllerAndService(modelDesc, urlBase, "video", "id", "Integer", searchField, searchFieldDesc);
-        generator.generateJsp(modelDesc, urlBase, searchField, searchFieldDesc, new LayUiTable().addCol(new LayUiTableColumn("id", "ID"))
-                .addCol(new LayUiTableColumn("title", "视频名称"))
-                .addCol(new LayUiTableColumn("typeId", "视频分类"))
-                .addCol(new LayUiTableColumn("picUrl", "首页链接"))
-                .addCol(new LayUiTableColumn("video", "视频链接"))
-                .addCol(new LayUiTableColumn("playCount", "播放次数"))
-                .addCol(new LayUiTableColumn("downloadCount", "下载次数"))
-                .addCol(new LayUiTableColumn("uploadTime", "上传时间"))
-                .addCol(new LayUiTableColumn("uploader", "上传者"))
-                .addCol(new LayUiTableColumn("memo", "备注")));
+        String searchFieldDesc = "视频标题";
+        String tableName = "video";
+        generator.generateTableMvc(tableName, urlBase, searchField, searchFieldDesc);
     }
 
-    private boolean generateJsp(String modelDesc, String urlBase, String searchField, String searchFieldDesc, LayUiTable layUiTable) {
+    public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc) {
+
+        boolean i = generateControllerAndService(urlBase, tableName, searchField, searchFieldDesc);
+        boolean j = generateJsp(urlBase, searchField, searchFieldDesc, tableName);
+        return i && j;
+    }
+
+    public boolean generateJsp(String urlBase, String searchField, String searchFieldDesc, String tableName) {
+        String modelDesc = tableService.getTableComment(dbName, tableName);
         StringBuffer cols = new StringBuffer();
+        TableService tableService = new TableServiceImpl();
+        LayUiTable layUiTable = tableService.getLayUiTable(dbName, tableName);
         List<LayUiTableColumn> cols1 = layUiTable.getCols();
         if (cols1 != null) {
             for (LayUiTableColumn col : cols1) {
@@ -64,8 +72,7 @@ public class CodeGenerator {
         File detailsJsp = new File(jspBase + urlBase + "/details.jsp");
         try {
             boolean index = instanceFile(indexTemplete, params, indexJsp);
-//            return c && s && si;
-            return false;
+            return index;
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("写入文件失败");
@@ -82,23 +89,21 @@ public class CodeGenerator {
      * service实现类
      * basePackage.service.impl
      *
-     * @param modelDescription 数据表对应等实体名称
-     * @param urlBase          该模块web访问api前缀
-     * @param tableName        数据表名
-     * @param keyName          主键字段名
-     * @param keyType          主键java数据类型
-     * @param searchField      模糊搜索字段名驼峰形式（首字母大写）
-     * @param fieldNames       表指定字段列表
+     * @param urlBase     该模块web访问api前缀
+     * @param tableName   数据表名
+     * @param searchField 模糊搜索字段名驼峰形式（首字母大写）
      * @return 所有代码成功生产返回true，否则返回false
      */
-    public boolean generateControllerAndService(String modelDescription, String urlBase, String tableName, String keyName, String keyType, String searchField, String searchFieldDesc, String... fieldNames) {
+    public boolean generateControllerAndService(String urlBase, String tableName, String searchField, String searchFieldDesc) {
+        String modelDescription = tableService.getTableComment(dbName, tableName);
+        LayUiTable table = tableService.getLayUiTable(dbName, tableName);
         char separator = File.separatorChar;
         String baseDir = projectDir +
                 separator + "src" +
                 separator + "main" +
                 separator + "java" +
                 separator + basePackage.replace('.', separator);
-        String entityClassName = camel(tableName);
+        String entityClassName = camel(tableName, true);
         String entityName = entityClassName.substring(0, 1).toLowerCase() + entityClassName.substring(1);
         Map<String, String> params = new HashMap<>();
         params.put("com.ahjrlc.generator", basePackage);
@@ -106,9 +111,9 @@ public class CodeGenerator {
         params.put("${entityDesc}", modelDescription);
         params.put("${urlBase}", urlBase);
         params.put("$template$", entityName);
-        params.put("Object", keyType);
-        params.put("$key$", keyName);
-        params.put("$Key$", camel(keyName));
+        params.put("Object", toJavaType(table.getKeyType()));
+        params.put("$key$", camel(table.getKeyName(), false));
+        params.put("$Key$", camel(table.getKeyName(), true));
         params.put("$searchField$", searchField);
         params.put("${searchFieldDesc}", searchFieldDesc);
 
@@ -123,13 +128,14 @@ public class CodeGenerator {
             boolean s = instanceFile(serviceTemp, params, serviceFile);
             boolean si = instanceFile(serviceTempImpl, params, serviceFileImpl);
             boolean c = instanceFile(controllerTemp, params, controllerFile);
-//            return c && s && si;
-            return false;
+            return c && s && si;
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("写入文件失败");
         }
     }
+
+
 
     /**
      * 用map中的参数替换文件中的模版文件中的占位符，并写入到目标文件
@@ -167,31 +173,5 @@ public class CodeGenerator {
             throw new RuntimeException("模版文件未找到");
         }
         return false;
-    }
-
-    /**
-     * 将下划线分割的表名转换为java的驼峰命名的实体类名
-     *
-     * @param tableName 表名
-     * @return 驼峰命名的实体类名
-     */
-    private String camel(String tableName) {
-        if (tableName != null && !"".equals(tableName.trim())) {
-            int size = tableName.length();
-            char[] chars = tableName.toCharArray();
-            StringBuffer entityName = new StringBuffer((chars[0] + "").toUpperCase());
-            for (int i = 1; i < size; i++) {
-                if (chars[i] != '_') {
-                    entityName.append(chars[i]);
-                } else {
-                    i++;
-                    if (i < size) {
-                        entityName.append((chars[i] + "").toUpperCase());
-                    }
-                }
-            }
-            return new String(entityName);
-        }
-        return null;
     }
 }

@@ -20,6 +20,8 @@ public class LayUiTable {
     private  Boolean page;
     private Boolean even;
     private String size;
+    private String keyName;
+    private String keyType;
 
     public LayUiTable addCol(LayUiTableColumn layUiTableColumn) {
         cols.add(layUiTableColumn);
