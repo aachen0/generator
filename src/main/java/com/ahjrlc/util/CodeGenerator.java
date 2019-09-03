@@ -36,16 +36,14 @@ public class CodeGenerator {
     }
 
     public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc) {
-
         boolean i = generateControllerAndService(urlBase, tableName, searchField, searchFieldDesc);
         boolean j = generateJsp(urlBase, searchField, searchFieldDesc, tableName);
         return i && j;
     }
 
-    public boolean generateJsp(String urlBase, String searchField, String searchFieldDesc, String tableName) {
+    public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc) {
         String modelDesc = tableService.getTableComment(dbName, tableName);
         StringBuffer cols = new StringBuffer();
-        TableService tableService = new TableServiceImpl();
         LayUiTable layUiTable = tableService.getLayUiTable(dbName, tableName);
         List<LayUiTableColumn> cols1 = layUiTable.getCols();
         if (cols1 != null) {
@@ -128,7 +126,6 @@ public class CodeGenerator {
             throw new RuntimeException("写入文件失败");
         }
     }
-
 
 
     /**

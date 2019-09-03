@@ -24,6 +24,7 @@ import java.util.List;
 @Controller
 @RequestMapping("${urlBase}")
 @Api(tags = "${entityDesc}接口")
+@CrossOrigin
 public class $Template$Controller {
     @Autowired
     $Template$Service $template$Service;

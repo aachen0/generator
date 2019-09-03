@@ -54,19 +54,24 @@
 <!--            <property name="useActualColumnNames" value="false"/>-->
 <!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
 <!--        </table>-->
-<!--                <table tableName="template" domainObjectName="$Template$">-->
-<!--                    <property name="useActualColumnNames" value="false"/>-->
-<!--                    <generatedKey column="$key$" sqlStatement="MySql" identity="true"/>-->
-<!--                    <columnOverride column="$key$" javaType="Object" property="$Key$"/>-->
-<!--                    <columnOverride column="$searchField$" property="$searchField$"/>-->
-<!--                </table>-->
-        <!--        <table tableName="video" domainObjectName="Video">-->
-        <!--            <property name="useActualColumnNames" value="false"/>-->
-        <!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
-        <!--        </table>-->
-                <table tableName="config" domainObjectName="Config">
-                    <property name="useActualColumnNames" value="false"/>
-
-                </table>
+<!--        <table tableName="video" domainObjectName="Video">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+<!--        <table tableName="config" domainObjectName="Config">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--        </table>-->
+<!--        <table tableName="notice" domainObjectName="Notice">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+<!--        <table tableName="type" domainObjectName="Type">-->
+<!--            <property name="useActualColumnNames" value="false"/>-->
+<!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+<!--        </table>-->
+        <table tableName="menu" domainObjectName="Menu">
+            <property name="useActualColumnNames" value="false"/>
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>

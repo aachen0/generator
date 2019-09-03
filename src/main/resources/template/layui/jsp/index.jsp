@@ -118,7 +118,7 @@
                     });
                     break;
                 case 'add':
-                    xadmin.open('添加用户', '${ctx}${urlBase}/edit', ${width}, ${heigth});
+                    xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit');
                     break;
             }
         });
@@ -139,7 +139,7 @@
                     });
                 });
             } else if (obj.event === 'edit') {
-                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?id=' + data.id, ${width}, ${heigth})
+                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?id=' + data.id)
             }
         });
     });
