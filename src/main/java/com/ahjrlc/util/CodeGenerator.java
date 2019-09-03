@@ -20,20 +20,14 @@ public class CodeGenerator {
     private String basePackage;
     private String dbName;
 
-    public CodeGenerator() {
-        ResourceBundle config = ResourceBundle.getBundle("config");
+    public CodeGenerator(ResourceBundle config) {
         this.projectDir = config.getString("project.base.dir");
         this.basePackage = config.getString("base.package");
         this.dbName = config.getString("db.name");
     }
 
-    public CodeGenerator(String projectDir, String basePackage) {
-        this.projectDir = projectDir;
-        this.basePackage = basePackage;
-    }
-
     public static void main(String[] args) {
-        CodeGenerator generator = new CodeGenerator();
+        CodeGenerator generator = new CodeGenerator(ResourceBundle.getBundle("config"));
         String urlBase = "/admin/video";
         String searchField = "Title";
         String searchFieldDesc = "视频标题";
