@@ -51,7 +51,7 @@ public class TableServiceImpl implements TableService {
             ResultSet resultSet = preparedStatement.executeQuery();
             LayUiTable table = new LayUiTable();
             while (resultSet.next()){
-                LayUiTableColumn column = new LayUiTableColumn(camel(resultSet.getString("COLUMN_NAME"),false), resultSet.getString("COLUMN_COMMENT"));
+                LayUiTableColumn column = new LayUiTableColumn(camel(dbName,false),camel(resultSet.getString("COLUMN_NAME"),false), resultSet.getString("COLUMN_COMMENT"));
                 if ("PRI".equals(resultSet.getString("COLUMN_KEY"))){
                     table.setKeyName(resultSet.getString("COLUMN_NAME"));
                     table.setKeyType(resultSet.getString("DATA_TYPE"));

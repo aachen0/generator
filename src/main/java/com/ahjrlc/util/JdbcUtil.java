@@ -18,7 +18,6 @@ import java.util.Set;
  *
  * @author aachen0
  */
-@SuppressWarnings("unchecked")
 public class JdbcUtil {
     /**
      * 根据属性文件的配置建立一个jdbc连接
