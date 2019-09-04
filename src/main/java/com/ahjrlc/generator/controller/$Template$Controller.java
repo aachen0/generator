@@ -84,6 +84,13 @@ public class $Template$Controller {
         return $template$Service.delBy$Key$($key$);
     }
 
+    @PostMapping("/del/batch")
+    @ResponseBody
+    @ApiOperation("根据主键删除一个用户评论")
+    public int commentDelBatch(@RequestParam("$key$s") List<Object> $key$s) {
+        return $template$Service.delBy$Key$s($key$s);
+    }
+
     @GetMapping("/details")
     @ResponseBody
     @ApiOperation("根据主键获取${entityDesc}详情")

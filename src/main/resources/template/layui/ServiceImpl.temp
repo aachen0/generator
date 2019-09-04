@@ -38,6 +38,17 @@ public class $Template$ServiceImpl implements $Template$Service {
     }
 
     @Override
+    public int delBy$Key$s(List<Object> $key$s) {
+        if (!isEmpty($key$s)) {
+            $Template$Example example = new $Template$Example();
+            $Template$Example.Criteria criteria = example.createCriteria();
+            criteria.and$Key$In($key$s);
+            return mapper.deleteByExample(example);
+        }
+        return -1;
+    }
+
+    @Override
     public List<$Template$> listPaged(Integer page, Integer limit, String part$searchField$) {
         $Template$Example example = new $Template$Example();
         $Template$Example.Criteria criteria = example.createCriteria();

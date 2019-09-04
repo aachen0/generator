@@ -35,6 +35,13 @@ public interface $Template$Service {
     Integer delBy$Key$(Object $key$);
 
     /**
+     * 批量删除${entityDesc}
+     * @param $key$s ${entityDesc}id
+     * @return 成功删除记录数
+     */
+    int delBy$Key$s(List<Object> $key$s);
+
+    /**
      * 分页列出符合条件的${entityDesc}
      *
      * @param page               分页第几页

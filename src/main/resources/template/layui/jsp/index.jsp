@@ -101,13 +101,14 @@
             var data = checkStatus.data;
             var selIDs = [];
             for (var i = 0; i < data.length; i++) {
-                selIDs.push(data[i].id);
+                selIDs.push(data[i].$key$);
             }
             switch (obj.event) {
                 case 'delete':
                     layer.confirm('真的删除选中的' + data.length + "条记录么？", function (index) {
                         $.ajax({
-                            url: "${ctx}${urlBase}/del?id=" + selIDs,
+                            url: "${ctx}${urlBase}/del/batch?$key$s=" + selIDs,
+                            method: 'post',
                             success: function (res) {
                                 layer.alert(res, function (index) {
                                     layer.close(index);
@@ -128,7 +129,7 @@
             if (obj.event === 'del') {
                 layer.confirm('真的删除这行记录么？', function (index) {
                     $.ajax({
-                        url: "${ctx}${urlBase}/del?id=" + data.id,
+                        url: "${ctx}${urlBase}/del?$key$=" + data.$key$,
                         method: 'post',
                         success: function (res) {
                             layer.alert(res, function (index) {
@@ -139,7 +140,7 @@
                     });
                 });
             } else if (obj.event === 'edit') {
-                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?id=' + data.id)
+                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$)
             }
         });
     });

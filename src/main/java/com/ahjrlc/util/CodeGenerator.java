@@ -48,7 +48,7 @@ public class CodeGenerator {
         }
         Map<String, String> params = new HashMap<>();
         params.put("$entity$", camel(tableName, false));
-        params.put("$key$", layUiTable.getKeyName());
+        params.put("$key$", camel(layUiTable.getKeyName(), false));
         params.put("${entityDesc}", modelDesc);
         params.put("${urlBase}", urlBase);
         params.put("${searchField}", searchField);
