@@ -43,6 +43,10 @@ public class CodeGenerator {
         if (columns != null) {
             for (LayUiTableColumn col : columns) {
                 cols.append(",").append(col.toString()).append("\n                ");
+//                主键不提供输入
+                if (col.getField().equals(layUiTable.getKeyName())){
+                    continue;
+                }
                 fieldInputs.append(col.toInputString()).append("\n");
             }
         }

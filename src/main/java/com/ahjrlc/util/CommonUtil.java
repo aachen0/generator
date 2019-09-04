@@ -57,4 +57,16 @@ public class CommonUtil {
                 return "Object";
         }
     }
+
+    public static String toHtmlInputType(String jdbcType) {
+        switch (jdbcType) {
+            case "int":
+            case "decimal":
+                return "number";
+            case "datetime":
+                return "date";
+            default:
+                return "text";
+        }
+    }
 }

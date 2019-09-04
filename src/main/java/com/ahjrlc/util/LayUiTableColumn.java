@@ -9,9 +9,10 @@ import lombok.Data;
  */
 @Data
 public class LayUiTableColumn {
-    public LayUiTableColumn(String entity, String field, String title) {
+    public LayUiTableColumn(String entity, String field, String fieldType, String title) {
         this.entity = entity;
         this.field = field;
+        this.fieldType = fieldType;
         this.title = title;
     }
 
@@ -24,6 +25,11 @@ public class LayUiTableColumn {
      * 实体对象属性名，字段名小驼峰形式
      */
     private String field;
+
+    /**
+     * 本列字段jdbc类型
+     */
+    private String fieldType;
     /**
      * 实体对象属性说明，取数据表字段说明
      */
@@ -49,12 +55,15 @@ public class LayUiTableColumn {
     }
 
     public String toInputString() {
-        StringBuilder fieldInput = new StringBuilder("<div class='layui-form-item'>\n");
-        fieldInput.append("<label for='").append(field).append("' class='layui-form-label'>\n<span class='we-red'>*</span>").append(title)
-                .append("</label>\n<div class='layui-input-inline'>\n")
-                .append("<input type='text' class='layui-input' id='")
+        StringBuilder fieldInput = new StringBuilder("<div class='layui-form-item'>\n")
+                .append("                        <label for='").append(field).append("' class='layui-form-label'>\n")
+                .append("                            <span class='we-red'>*</span>").append(title).append("</label>\n")
+                .append("                        <div class='layui-input-inline'>\n")
+                .append("                            <input type='").append(CommonUtil.toHtmlInputType(fieldType))
+                .append("' class='layui-input' id='")
                 .append(field).append("' name='").append(field).append("' value='${").append(entity).append(".").append(field).append("}'>\n")
-                .append("</div>\n</div>\n");
+                .append("                        </div>\n")
+                .append("                    </div>");
         return fieldInput.toString();
     }
 }
