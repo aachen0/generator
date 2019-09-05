@@ -10,16 +10,12 @@ public class CodeGeneratorTest {
     CodeGenerator generator = new CodeGenerator(ResourceBundle.getBundle("config"));
 //    @Test
     public void generateTableMvc() {
-        generator.generateTableMvc("config","/admin/config","ConfigKey","字典键");
+        generator.generateServiceJsp("config","/admin/config","ConfigKey","字典键");
 
     }
 
 //    @Test
     public void generateJsp() {
         generator.generateJsp("config","/admin/config","ConfigKey","字典键","all");
-    }
-
-//    @Test
-    public void generateControllerAndService() {
     }
 }

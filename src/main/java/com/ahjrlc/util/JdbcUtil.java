@@ -2,8 +2,6 @@ package com.ahjrlc.util;
 
 import com.gitee.aachen0.util.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -40,45 +38,6 @@ public class JdbcUtil {
             e.printStackTrace();
         }
         return connection;
-    }
-
-    /**
-     * 将结果集转换成对应的实体类对象
-     *
-     * @param rs    结果集
-     * @param clazz 实体类的Class对象
-     * @return 实体类对象
-     */
-    public static Object rsToObject(ResultSet rs, Class clazz) {
-        Object object = null;
-        try {
-            object = clazz.newInstance();
-            ResultSetMetaData data = rs.getMetaData();
-            int n = data.getColumnCount();
-            for (int i = 1; i <= n; i++) {
-                String columnName = data.getColumnName(i);
-                String columnType = data.getColumnTypeName(i);
-                Object o = rs.getObject(columnName);
-                // 处理_风格的字段名为java中的驼峰风格
-                String[] ss = columnName.split("_");
-                if (ss.length > 1) {
-                    StringBuffer colName = new StringBuffer(ss[0]);
-                    for (int j = 1; j < ss.length; j++) {
-                        colName.append((ss[j].charAt(0) + "").toUpperCase()).append(ss[j].substring(1));
-                    }
-                    columnName = new String(colName);
-                }
-                // 拼出set的方法名
-                String setter = StringUtils.fieldToSetter(columnName);
-                Class paraType = jdbcToJavaType(columnType);
-                Method method = clazz.getMethod(setter, paraType);
-                Class packType = toPackType(paraType);
-                method.invoke(object, packType.cast(o));
-            }
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | SQLException e) {
-            e.printStackTrace();
-        }
-        return object;
     }
 
     /**
@@ -152,39 +111,6 @@ public class JdbcUtil {
             default:
                 return String.class;
         }
-    }
-
-    /**
-     * 根据Properties文件生成建表语句&lt;br/&gt;
-     * Properties示例&lt;br/&gt;
-     * tableName=user&lt;br/&gt;
-     * #格式为:字段名=类型，最小值，最大值&lt;br/&gt;
-     * user_id=int,,&lt;br/&gt;
-     * user_age=int,,
-     */
-    private static void createGenerator(Properties table) {
-        Set<String> fields = table.stringPropertyNames();
-        String tableName = table.getProperty("tableName");
-        // 移除表名，剩下的为字段名
-        fields.remove("tableName");
-        // 字段个数
-        int length = fields.size();
-        StringBuffer sql =
-                new StringBuffer("drop table if exists ").append(tableName).append(";\r\ncreate table ").append(tableName).append(
-                        "(");
-        String[] ss = new String[length];
-        fields.toArray(ss);
-        for (int i = 0; i < length; i++) {
-            String[] args = table.getProperty(ss[i]).split("/");
-            String type = args[0].toLowerCase();
-            if ("address".equals(type) || "name".equals(type) || "phone".equals(type)) {
-                type = "varchar(20)";
-            }
-            sql.append("\r\n").append(ss[i]).append(" ").append(type).append((i == length - 1) ? ")" : ",");
-        }
-        sql.append(";");
-        // 打印出来
-        System.out.println(sql);
     }
 
 }

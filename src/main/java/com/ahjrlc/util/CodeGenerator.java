@@ -5,13 +5,13 @@ import com.ahjrlc.generator.service.TableService;
 import com.ahjrlc.generator.service.impl.TableServiceImpl;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 import static com.ahjrlc.util.CommonUtil.camel;
 import static com.ahjrlc.util.CommonUtil.toJavaType;
 
 /**
+ * 核心类，代码生成器
  * @author aachen0
  */
 public class CodeGenerator {
@@ -26,12 +26,29 @@ public class CodeGenerator {
         this.dbName = config.getString("db.name");
     }
 
-    public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc) {
-        boolean i = generateControllerAndService(tableName, urlBase, searchField, searchFieldDesc, "all");
+    /**
+     * 生成指定数据表后台全套
+     * @param tableName 表名
+     * @param urlBase 模块对外访问url接口前缀
+     * @param searchField 需要模糊搜索的字段
+     * @param searchFieldDesc 需要模糊搜索字段的说明
+     * @return 生成是否成功
+     */
+    public boolean generateServiceJsp(String tableName, String urlBase, String searchField, String searchFieldDesc) {
+        boolean i = generateControllerService(tableName, urlBase, searchField, searchFieldDesc, "all");
         boolean j = generateJsp(tableName, urlBase, searchField, searchFieldDesc, "all");
         return i && j;
     }
 
+    /**
+     * 生成指定数据表Jsp部分
+     * @param tableName 表名
+     * @param urlBase 模块对外访问url接口前缀
+     * @param searchField 需要模糊搜索的字段
+     * @param searchFieldDesc 需要模糊搜索字段的说明
+     * @param type jsp页面类型：edit/index/all
+     * @return 生成s否成功
+     */
     public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
         String modelDesc = tableService.getTableComment(dbName, tableName);
 //        封装数据列表中的表头js参数
@@ -47,7 +64,7 @@ public class CodeGenerator {
                 if (col.getField().equals(layUiTable.getKeyName())){
                     continue;
                 }
-                fieldInputs.append(col.toInputString()).append("\n");
+                fieldInputs.append(col.toInputString()).append("\n                    ");
             }
         }
         Map<String, String> params = new HashMap<>();
@@ -95,12 +112,14 @@ public class CodeGenerator {
      * service实现类
      * basePackage.service.impl
      *
-     * @param urlBase     该模块web访问api前缀
-     * @param tableName   数据表名
-     * @param searchField 模糊搜索字段名驼峰形式（首字母大写）
+     * @param tableName 表名
+     * @param urlBase 模块对外访问url接口前缀
+     * @param searchField 需要模糊搜索的字段
+     * @param searchFieldDesc 需要模糊搜索字段的说明
+     * @param type 指定生成某个java类：controller/service/impl/all
      * @return 所有代码成功生产返回true，否则返回false
      */
-    public boolean generateControllerAndService(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
+    public boolean generateControllerService(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
         String modelDescription = tableService.getTableComment(dbName, tableName);
         LayUiTable table = tableService.getLayUiTable(dbName, tableName);
         char separator = File.separatorChar;
@@ -136,7 +155,7 @@ public class CodeGenerator {
                 case "service":
                     result = instanceFile(serviceTemp, params, serviceFile);
                     break;
-                case "serviceImpl":
+                case "impl":
                     result = instanceFile(serviceTempImpl, params, serviceFileImpl);
                     break;
                 case "controller":
@@ -158,9 +177,9 @@ public class CodeGenerator {
     /**
      * 用map中的参数替换文件中的模版文件中的占位符，并写入到目标文件
      *
-     * @param template
-     * @param params
-     * @return
+     * @param template 模版文件流
+     * @param params 需替换的参数
+     * @return 写入文件是否成功
      */
     private boolean instanceFile(InputStream template, Map<String, String> params, File destFile) throws IOException {
         if (template != null && params.size() > 0) {

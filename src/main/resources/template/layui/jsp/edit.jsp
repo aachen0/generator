@@ -16,11 +16,11 @@
     <div class="layui-row">
         <div class="layui-card">
             <div class="layui-card-body ">
-                <form class="layui-form" action="${ctx}${urlBase}/edit/submit" method="post">
+                <form class="layui-form">
                     ${fieldInputs}
                     <div class="layui-form-item">
                         <label class="layui-form-label"></label>
-                        <button class="layui-btn" lay-submit="">确定</button>
+                        <button class="layui-btn" lay-submit="" lay-filter="save">确定</button>
                         <input type="hidden" name="$key$" id="$key$" value="${$entity$.$key$}"/>
                     </div>
                 </form>
@@ -29,47 +29,27 @@
     </div>
 </div>
 <script src="${ctx}/static/js/common.js" charset="utf-8"></script>
-
 <script type="text/javascript">
-
     layui.use(['form', 'jquery', 'layer', 'upload'], function () {
         var form = layui.form,
             $ = layui.jquery,
-            layer = layui.layer,
-            upload = layui.upload;
-        //普通图片上传
-        transImgToBase64({
-            upload: upload,
-            elem: '#businessLicenseStrShow',
-            url: '${ctx}/declare/upload',
-            paramElem: $('#businessLicenseStr'),
+            layer = layui.layer;
+        form.on('submit(save)', function (data) {
+            var field = data.field;
+            $.ajax({
+                url: "${ctx}${urlBase}/edit/submit",
+                data: field,
+                method: 'post',
+                success: function (res) {
+                    var message = res.indexOf('add')>0?'添加成功':'修改成功';
+                    layer.alert(message, function (index) {
+                        parent.layer.close(index);
+                        parent.location.reload();
+                    })
+                }
+            });
+            return false;
         });
-        <c:if test="${!empty result}">
-        layer.msg("${result}", {
-            icon: 6,
-            time: 500,// 延时半秒
-        }, function () {
-            var index = parent.layer.getFrameIndex(window.name);
-//关闭当前frame
-            parent.layer.close(index);
-        });
-        </c:if>
-
-        //自定义验证规则
-        form.verify({
-            sorder: [/\d+/, '正确填写排序数字']
-        });
-
-        <c:if test="${!empty result}">
-        layer.msg("${result}", {
-            icon: 6,
-            time: 500// 延时半秒
-        }, function () {
-            var index = parent.layer.getFrameIndex(window.name);
-//关闭当前frame
-            parent.layer.close(index);
-        });
-        </c:if>
     });
 </script>
 </body>
