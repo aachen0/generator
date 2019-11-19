@@ -1,4 +1,4 @@
-package com.ahjrlc.util;
+package com.ahjrlc.generator.util;
 
 /**
  * 通用工具类

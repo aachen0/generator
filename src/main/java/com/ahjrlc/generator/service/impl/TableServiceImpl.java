@@ -1,16 +1,16 @@
 package com.ahjrlc.generator.service.impl;
 
 import com.ahjrlc.generator.service.TableService;
-import com.ahjrlc.util.JdbcUtil;
-import com.ahjrlc.util.LayUiTable;
-import com.ahjrlc.util.LayUiTableColumn;
+import com.ahjrlc.generator.util.JdbcUtil;
+import com.ahjrlc.generator.util.LayUiTable;
+import com.ahjrlc.generator.util.LayUiTableColumn;
 
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.ahjrlc.util.CommonUtil.camel;
+import static com.ahjrlc.generator.util.CommonUtil.camel;
 
 /**
  * @author aachen0
@@ -31,14 +31,13 @@ public class TableServiceImpl implements TableService {
 
     /**
      * 列出数据库表名为tableName的数据库中所有表
-     *
+     * @param bundle 数据库链接配置
      * @param dbName 数据库名
      * @param tableName 表名
      * @return 列
      */
     @Override
-    public LayUiTable getLayUiTable(String dbName, String tableName) {
-        ResourceBundle bundle = ResourceBundle.getBundle("config");
+    public LayUiTable getLayUiTable(ResourceBundle bundle,String dbName, String tableName) {
         Connection connection = JdbcUtil.getConnection(bundle);
         try {
             String sql = "select COLUMN_NAME, DATA_TYPE, COLUMN_KEY, COLUMN_COMMENT\n" +
@@ -66,9 +65,13 @@ public class TableServiceImpl implements TableService {
 
     }
 
+    /**
+     * @param dbName    数据库名
+     * @param tableName 表名
+     * @return
+     */
     @Override
-    public String getTableComment(String dbName, String tableName) {
-        ResourceBundle bundle = ResourceBundle.getBundle("config");
+    public String getTableComment(ResourceBundle bundle,String dbName, String tableName) {
         Connection connection = JdbcUtil.getConnection(bundle);
         try {
             String sql = "select TABLE_COMMENT\n" +

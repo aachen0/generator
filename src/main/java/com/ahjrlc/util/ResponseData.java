@@ -1,11 +1,11 @@
 package com.ahjrlc.util;
 
 /**
- * layui列表分页数据封装
+ * layui列表分页数据封装,兼容标准响应相间格式
  *
  * @author Administrator
  */
-public class LayUiPage {
+public class ResponseData {
 
     /**
      * 反馈代码
@@ -34,7 +34,7 @@ public class LayUiPage {
         return code;
     }
 
-    public LayUiPage setCode(int code) {
+    public ResponseData setCode(int code) {
         this.code = code;
         return this;
 
@@ -44,7 +44,7 @@ public class LayUiPage {
         return msg;
     }
 
-    public LayUiPage setMsg(String msg) {
+    public ResponseData setMsg(String msg) {
         this.msg = msg;
         return this;
     }
@@ -53,7 +53,7 @@ public class LayUiPage {
         return count;
     }
 
-    public LayUiPage setCount(Long count) {
+    public ResponseData setCount(Long count) {
         this.count = count;
         return this;
 
@@ -63,7 +63,7 @@ public class LayUiPage {
         return data;
     }
 
-    public LayUiPage setData(Object data) {
+    public ResponseData setData(Object data) {
         this.data = data;
         return this;
 
@@ -73,7 +73,7 @@ public class LayUiPage {
         return limit;
     }
 
-    public LayUiPage setLimit(Integer limit) {
+    public ResponseData setLimit(Integer limit) {
         this.limit = limit;
         return this;
 

@@ -1,29 +1,33 @@
-package com.ahjrlc.util;
+package com.ahjrlc.generator;
 
 
 import com.ahjrlc.generator.service.TableService;
 import com.ahjrlc.generator.service.impl.TableServiceImpl;
+import com.ahjrlc.generator.util.LayUiTable;
+import com.ahjrlc.generator.util.LayUiTableColumn;
+import org.springframework.util.Assert;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
-import static com.ahjrlc.util.CommonUtil.camel;
-import static com.ahjrlc.util.CommonUtil.toJavaType;
+import static com.ahjrlc.generator.util.CommonUtil.camel;
+import static com.ahjrlc.generator.util.CommonUtil.toJavaType;
 
 /**
  * @author aachen0
  */
 public class CodeGenerator {
     private TableService tableService = new TableServiceImpl();
+    private ResourceBundle bundle;
     private String projectDir;
     private String basePackage;
     private String dbName;
 
-    public CodeGenerator(ResourceBundle config) {
-        this.projectDir = config.getString("project.base.dir");
-        this.basePackage = config.getString("base.package");
-        this.dbName = config.getString("db.name");
+    public CodeGenerator(String config) {
+        this.bundle = ResourceBundle.getBundle(config);
+        this.projectDir = bundle.getString("project.base.dir");
+        this.basePackage = bundle.getString("base.package");
+        this.dbName = bundle.getString("db.name");
     }
 
     public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc) {
@@ -33,10 +37,11 @@ public class CodeGenerator {
     }
 
     public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
-        String modelDesc = tableService.getTableComment(dbName, tableName);
+        String modelDesc = tableService.getTableComment(bundle, dbName, tableName);
+        Assert.notNull(modelDesc,"未找到指定的数据表信息："+dbName+"."+tableName);
 //        封装数据列表中的表头js参数
         StringBuilder cols = new StringBuilder();
-        LayUiTable layUiTable = tableService.getLayUiTable(dbName, tableName);
+        LayUiTable layUiTable = tableService.getLayUiTable(bundle,dbName, tableName);
         List<LayUiTableColumn> columns = layUiTable.getCols();
 //        封装实体编辑页面input标签html
         StringBuilder fieldInputs = new StringBuilder();
@@ -44,7 +49,7 @@ public class CodeGenerator {
             for (LayUiTableColumn col : columns) {
                 cols.append(",").append(col.toString()).append("\n                ");
 //                主键不提供输入
-                if (col.getField().equals(layUiTable.getKeyName())){
+                if (col.getField().equals(layUiTable.getKeyName())) {
                     continue;
                 }
                 fieldInputs.append(col.toInputString()).append("\n");
@@ -101,8 +106,10 @@ public class CodeGenerator {
      * @return 所有代码成功生产返回true，否则返回false
      */
     public boolean generateControllerAndService(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
-        String modelDescription = tableService.getTableComment(dbName, tableName);
-        LayUiTable table = tableService.getLayUiTable(dbName, tableName);
+        String modelDescription = tableService.getTableComment(bundle,dbName, tableName);
+        Assert.notNull(modelDescription,"未找到指定的数据表信息："+dbName+"."+tableName);
+        LayUiTable table = tableService.getLayUiTable(bundle,dbName, tableName);
+        Assert.notNull(table,"未找到指定的数据表信息："+dbName+"."+tableName);
         char separator = File.separatorChar;
         String baseDir = projectDir +
                 separator + "src" +

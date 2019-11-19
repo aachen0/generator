@@ -55,16 +55,12 @@
         </div>
     </script>
 </div>
-<script src="${ctx}/static/js/cookies.js"></script>
 <script>
-    layui.use(['table', 'util', 'upload', 'layer'], function () {
+    layui.use(['table', 'upload', 'layer'], function () {
         var table = layui.table,
-            util = layui.util,
-            layer = layui.layer;
-        // 显示跳转到本页前的操作结果
-        if (${empty result?0:1}) {
-            layer.msg('${result}');
-        }
+            layer = layui.layer,
+            open_width = 600,// 弹窗宽度度
+            open_height = 500;// 弹窗高度
         // 从cookie中取分页大小，如果没有值，则使用默认10
         var pageSizeLocal = get_cookie("pageSizeLocal");
         var pageSize = (pageSizeLocal > 0) ? pageSizeLocal : 10;
@@ -79,7 +75,6 @@
             , cols: [[
                 {type: 'checkbox'}
                 ${cols}
-                <%-- 上面开始对应的是实体类的属性名 --%>
                 , {fixed: 'right', width: 190, align: 'center', toolbar: '#option'}
             ]]
             , page: true
@@ -119,7 +114,7 @@
                     });
                     break;
                 case 'add':
-                    xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit');
+                    xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit', open_width, open_height);
                     break;
             }
         });
@@ -140,7 +135,7 @@
                     });
                 });
             } else if (obj.event === 'edit') {
-                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$)
+                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$, open_width, open_height);
             }
         });
     });

@@ -1,11 +1,6 @@
-package com.ahjrlc.util;
+package com.ahjrlc.generator.util;
 
-import com.gitee.aachen0.util.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
@@ -40,45 +35,6 @@ public class JdbcUtil {
             e.printStackTrace();
         }
         return connection;
-    }
-
-    /**
-     * 将结果集转换成对应的实体类对象
-     *
-     * @param rs    结果集
-     * @param clazz 实体类的Class对象
-     * @return 实体类对象
-     */
-    public static Object rsToObject(ResultSet rs, Class clazz) {
-        Object object = null;
-        try {
-            object = clazz.newInstance();
-            ResultSetMetaData data = rs.getMetaData();
-            int n = data.getColumnCount();
-            for (int i = 1; i <= n; i++) {
-                String columnName = data.getColumnName(i);
-                String columnType = data.getColumnTypeName(i);
-                Object o = rs.getObject(columnName);
-                // 处理_风格的字段名为java中的驼峰风格
-                String[] ss = columnName.split("_");
-                if (ss.length > 1) {
-                    StringBuffer colName = new StringBuffer(ss[0]);
-                    for (int j = 1; j < ss.length; j++) {
-                        colName.append((ss[j].charAt(0) + "").toUpperCase()).append(ss[j].substring(1));
-                    }
-                    columnName = new String(colName);
-                }
-                // 拼出set的方法名
-                String setter = StringUtils.fieldToSetter(columnName);
-                Class paraType = jdbcToJavaType(columnType);
-                Method method = clazz.getMethod(setter, paraType);
-                Class packType = toPackType(paraType);
-                method.invoke(object, packType.cast(o));
-            }
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | SQLException e) {
-            e.printStackTrace();
-        }
-        return object;
     }
 
     /**

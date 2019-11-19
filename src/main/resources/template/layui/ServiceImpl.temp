@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import static com.gitee.aachen0.util.CommonUtils.isEmpty;
 
 
 @Service
@@ -23,12 +22,12 @@ public class $Template$ServiceImpl implements $Template$Service {
     }
 
     @Override
-    public String saveBy$Key$($Template$ $template$) {
+    public Integer saveBy$Key$($Template$ $template$) {
         $Template$ ori = getBy$Key$($template$.get$Key$());
         if (ori == null) {
-            return "add:" + mapper.insert($template$);
+            return mapper.insert($template$) > 0 ? 1 : -1;
         } else {
-            return "edit:" + mapper.updateByPrimaryKeySelective($template$);
+            return mapper.updateByPrimaryKeySelective($template$) > 0 ? 2 : 0;
         }
     }
 
@@ -39,7 +38,7 @@ public class $Template$ServiceImpl implements $Template$Service {
 
     @Override
     public int delBy$Key$s(List<Object> $key$s) {
-        if (!isEmpty($key$s)) {
+        if ($key$s != null && $key$s.size() > 0) {
             $Template$Example example = new $Template$Example();
             $Template$Example.Criteria criteria = example.createCriteria();
             criteria.and$Key$In($key$s);
@@ -52,7 +51,7 @@ public class $Template$ServiceImpl implements $Template$Service {
     public List<$Template$> listPaged(Integer page, Integer limit, String part$searchField$) {
         $Template$Example example = new $Template$Example();
         $Template$Example.Criteria criteria = example.createCriteria();
-        if (!isEmpty(part$searchField$)) {
+        if (part$searchField$ != null && part$searchField$.trim().length() > 0) {
             criteria.and$searchField$Like("%" + part$searchField$ + "%");
         }
         PageHelper.startPage(page, limit);

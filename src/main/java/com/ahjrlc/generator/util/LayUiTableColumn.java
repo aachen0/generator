@@ -1,4 +1,4 @@
-package com.ahjrlc.util;
+package com.ahjrlc.generator.util;
 
 import lombok.Data;
 

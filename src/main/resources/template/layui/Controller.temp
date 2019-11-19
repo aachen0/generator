@@ -2,7 +2,7 @@ package com.ahjrlc.generator.controller;
 
 import com.ahjrlc.generator.model.$Template$;
 import com.ahjrlc.generator.service.$Template$Service;
-import com.ahjrlc.util.LayUiPage;
+import com.ahjrlc.util.ResponseData;
 import com.github.pagehelper.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -47,15 +47,24 @@ public class $Template$Controller {
     }
 
 
+    @PostMapping("/edit/submit")
+    @ResponseBody
+    @ApiOperation(value = "增加或修改一个${entityDesc}信息", notes = "依据主键判断添加还是更新")
+    public ResponseData $template$Save(@Validated $Template$ $template$) {
+       int code = $template$Service.saveBy$Key$($template$);
+        return new ResponseData().setCode(200).setData(code);
+    }
+
+
     @GetMapping("/list/paged")
     @ResponseBody
     @ApiOperation("分页列出符合筛选条件的${entityDesc}列表，返回符合layui数据表格规范的数据格式")
     @ApiImplicitParam(value = "${searchFieldDesc}关键字",name = "part$searchField$")
-    public LayUiPage $template$ListPaged(@RequestParam("page") Integer page, @RequestParam("limit") Integer limit, String part$searchField$) {
+    public ResponseData $template$ListPaged(@RequestParam("page") Integer page, @RequestParam("limit") Integer limit, String part$searchField$) {
         List<$Template$> list = $template$Service.listPaged(page, limit, part$searchField$);
         if (list instanceof Page) {
             Page p = (Page) list;
-            return new LayUiPage().setCount(p.getTotal()).setData(list).setLimit(limit).setMsg("${entityDesc}列表");
+            return new ResponseData().setCount(p.getTotal()).setData(list).setLimit(limit).setMsg("${entityDesc}列表");
         }
         return null;
     }
@@ -65,16 +74,6 @@ public class $Template$Controller {
     @ApiOperation("列出所有${entityDesc}信息")
     public List<$Template$> $template$List() {
         return $template$Service.list();
-    }
-
-    @PostMapping("/edit/submit")
-    @ResponseBody
-    @ApiOperation(value = "增加或修改一个${entityDesc}信息", notes = "依据主键判断添加还是更新")
-    public String $template$Save(@Validated $Template$ $template$, BindingResult result) {
-        if (result.hasErrors()) {
-            return result.getAllErrors().toString();
-        }
-        return $template$Service.saveBy$Key$($template$);
     }
 
     @PostMapping("/del")
