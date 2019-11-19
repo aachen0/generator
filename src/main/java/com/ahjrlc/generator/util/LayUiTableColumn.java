@@ -30,6 +30,11 @@ public class LayUiTableColumn {
      * 本列字段jdbc类型
      */
     private String fieldType;
+
+    /**
+     * 是否主键
+     */
+    private Boolean isPri;
     /**
      * 实体对象属性说明，取数据表字段说明
      */

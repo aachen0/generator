@@ -9,11 +9,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,17 +32,17 @@ public class $Template$Controller {
 
     @GetMapping("/index")
     @ApiOperation("进入${entityDesc}列表视图")
-    @ApiImplicitParam(value = "${searchFieldDesc}关键字",name = "part$searchField$")
-    public String $template$Index(HttpServletRequest request,String part$searchField$) {
-        request.setAttribute("part$searchField$",part$searchField$);
+    @ApiImplicitParam(value = "${searchFieldDesc}关键字", name = "part$searchField$")
+    public String $template$Index(HttpServletRequest request, String part$searchField$) {
+        request.setAttribute("part$searchField$", part$searchField$);
         return "${urlBase}/index";
     }
 
     @GetMapping("/edit")
     @ApiOperation("进入${entityDesc}编辑视图")
     public String $template$Edit(HttpServletRequest request, Object $key$) {
-        $Template$ $template$ = $template$Service.getBy$Key$($key$);
-        request.setAttribute("$template$", $template$);
+        $Template$ ori = $template$Service.getByKey($key$);
+        request.setAttribute("$template$", ori);
         return "${urlBase}/edit";
     }
 
@@ -51,7 +51,7 @@ public class $Template$Controller {
     @ResponseBody
     @ApiOperation(value = "增加或修改一个${entityDesc}信息", notes = "依据主键判断添加还是更新")
     public ResponseData $template$Save(@Validated $Template$ $template$) {
-       int code = $template$Service.saveBy$Key$($template$);
+        int code = $template$Service.saveByKey($template$);
         return new ResponseData().setCode(200).setData(code);
     }
 
@@ -59,7 +59,7 @@ public class $Template$Controller {
     @GetMapping("/list/paged")
     @ResponseBody
     @ApiOperation("分页列出符合筛选条件的${entityDesc}列表，返回符合layui数据表格规范的数据格式")
-    @ApiImplicitParam(value = "${searchFieldDesc}关键字",name = "part$searchField$")
+    @ApiImplicitParam(value = "${searchFieldDesc}关键字", name = "part$searchField$")
     public ResponseData $template$ListPaged(@RequestParam("page") Integer page, @RequestParam("limit") Integer limit, String part$searchField$) {
         List<$Template$> list = $template$Service.listPaged(page, limit, part$searchField$);
         if (list instanceof Page) {
@@ -79,21 +79,18 @@ public class $Template$Controller {
     @PostMapping("/del")
     @ResponseBody
     @ApiOperation("根据主键删除一个${entityDesc}")
-    public int $template$Del(@RequestParam("$key$") Object $key$) {
-        return $template$Service.delBy$Key$($key$);
-    }
-
-    @PostMapping("/del/batch")
-    @ResponseBody
-    @ApiOperation("根据主键删除一个用户评论")
-    public int commentDelBatch(@RequestParam("$key$s") List<Object> $key$s) {
-        return $template$Service.delBy$Key$s($key$s);
+    public ResponseData $template$Del(@RequestParam("ids") Object[] ids) {
+        int count = 0;
+        if (ids != null && ids.length > 0) {
+            count = $template$Service.delByKeys(Arrays.asList(ids));
+        }
+        return new ResponseData().setCode(200).setMsg(count + "");
     }
 
     @GetMapping("/details")
     @ResponseBody
     @ApiOperation("根据主键获取${entityDesc}详情")
     public $Template$ $template$Details(@RequestParam("$key$") Object $key$) {
-        return $template$Service.getBy$Key$($key$);
+        return $template$Service.getByKey($key$);
     }
 }

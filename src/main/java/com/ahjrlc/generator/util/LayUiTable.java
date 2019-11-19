@@ -22,6 +22,7 @@ public class LayUiTable {
     private String size;
     private String keyName;
     private String keyType;
+    private int priCount;
 
     public LayUiTable addCol(LayUiTableColumn layUiTableColumn) {
         cols.add(layUiTableColumn);

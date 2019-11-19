@@ -49,13 +49,21 @@ public class TableServiceImpl implements TableService {
             preparedStatement.setString(2,tableName);
             ResultSet resultSet = preparedStatement.executeQuery();
             LayUiTable table = new LayUiTable();
+            int priCount = 0;
             while (resultSet.next()){
                 LayUiTableColumn column = new LayUiTableColumn(camel(tableName,false),camel(resultSet.getString("COLUMN_NAME"),false), resultSet.getString("DATA_TYPE"),resultSet.getString("COLUMN_COMMENT"));
                 if ("PRI".equals(resultSet.getString("COLUMN_KEY"))){
-                    table.setKeyName(resultSet.getString("COLUMN_NAME"));
-                    table.setKeyType(resultSet.getString("DATA_TYPE"));
+                    table.setKeyName(column.getField());
+                    table.setKeyType(column.getFieldType());
+                    column.setIsPri(true);
+                    priCount++;
                 }
                 table.addCol(column);
+            }
+            table.setPriCount(priCount);
+            if (priCount>1){
+                table.setKeyType(camel(tableName,true));
+                table.setKeyName(tableName);
             }
             return table;
         } catch (SQLException e) {

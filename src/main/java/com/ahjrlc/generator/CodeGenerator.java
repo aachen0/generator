@@ -117,7 +117,7 @@ public class CodeGenerator {
                 separator + "java" +
                 separator + basePackage.replace('.', separator);
         String entityClassName = camel(tableName, true);
-        String entityName = entityClassName.substring(0, 1).toLowerCase() + entityClassName.substring(1);
+        String entityName = camel(tableName,false);
         Map<String, String> params = new HashMap<>();
         params.put("com.ahjrlc.generator", basePackage);
         params.put("$Template$", entityClassName);
@@ -125,10 +125,17 @@ public class CodeGenerator {
         params.put("${urlBase}", urlBase);
         params.put("$template$", entityName);
         params.put("Object", toJavaType(table.getKeyType()));
-        params.put("$key$", camel(table.getKeyName(), false));
-        params.put("$Key$", camel(table.getKeyName(), true));
+        String keyName = table.getKeyName();
+        params.put("$key$", camel(keyName, false));
+        params.put("$Key$", camel(keyName, true));
         params.put("$searchField$", searchField);
         params.put("${searchFieldDesc}", searchFieldDesc);
+        if (table.getPriCount()==1){
+            String saveKey = entityName+".get"+camel(keyName,true)+"()";
+            params.put("${saveKey}",saveKey);
+        }else {
+            params.put("${saveKey}",entityName);
+        }
 
         InputStream controllerTemp = this.getClass().getResourceAsStream("/template/layui/Controller.temp");
         InputStream serviceTemp = this.getClass().getResourceAsStream("/template/layui/Service.temp");

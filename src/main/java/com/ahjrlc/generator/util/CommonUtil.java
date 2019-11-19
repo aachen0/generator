@@ -54,7 +54,7 @@ public class CommonUtil {
             case "datetime":
                 return "Date";
             default:
-                return "Object";
+                return jdbcType;
         }
     }
 

@@ -102,13 +102,10 @@
                 case 'delete':
                     layer.confirm('真的删除选中的' + data.length + "条记录么？", function (index) {
                         $.ajax({
-                            url: "${ctx}${urlBase}/del/batch?$key$s=" + selIDs,
+                            url: "${ctx}${urlBase}/del?ids=" + selIDs,
                             method: 'post',
                             success: function (res) {
-                                layer.alert(res, function (index) {
-                                    layer.close(index);
-                                    location.replace(location.href);
-                                });
+                                delAfter(res);
                             }
                         });
                     });
@@ -124,13 +121,10 @@
             if (obj.event === 'del') {
                 layer.confirm('真的删除这行记录么？', function (index) {
                     $.ajax({
-                        url: "${ctx}${urlBase}/del?$key$=" + data.$key$,
+                        url: "${ctx}${urlBase}/del?ids=" + data.$key$,
                         method: 'post',
                         success: function (res) {
-                            layer.alert(res, function (index) {
-                                layer.close(index);
-                                location.replace(location.href);
-                            });
+                            delAfter(res);
                         }
                     });
                 });

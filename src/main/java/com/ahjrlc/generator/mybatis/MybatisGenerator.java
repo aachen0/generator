@@ -18,7 +18,7 @@ import java.util.List;
  * @since 2018/11/19 21:41
  * IDE:IntelliJ IDEA
  */
-public class Generator {
+public class MybatisGenerator {
     /**
      * Mybatis根据配置文件configFile逆向工程生成实体类，mapper.xml和mapper.java接口文件，
      *
@@ -54,7 +54,7 @@ public class Generator {
         if (contexts!=null){
             for (Context context:contexts){
                 PluginConfiguration plugin=new PluginConfiguration();
-                plugin.setConfigurationType("com.ahjrlc.util.mybatis.OverIsMergeablePlugin");
+                plugin.setConfigurationType("com.ahjrlc.generator.mybatis.OverIsMergeablePlugin");
                 context.addPluginConfiguration(plugin);
             }
         }
