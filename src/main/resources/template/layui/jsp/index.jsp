@@ -15,7 +15,7 @@
 <div class="x-nav">
 	<span class="layui-breadcrumb">
         <a href="">首页</a>
-        <a href="">${entityDesc}管理</a>
+        <a href="${urlBase}/index">${entityDesc}管理</a>
      </span>
     <a class="layui-btn layui-btn-sm refresh" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon layui-icon-refresh"></i>
@@ -74,8 +74,7 @@
             , toolbar: '#toolbar'
             , cols: [[
                 {type: 'checkbox'}
-                ${cols}
-                , {fixed: 'right', width: 190, align: 'center', toolbar: '#option'}
+                ${cols}, {fixed: 'right', width: 190, align: 'center', toolbar: '#option'}
             ]]
             , page: true
             , limit: pageSize
@@ -96,19 +95,24 @@
             var data = checkStatus.data;
             var selIDs = [];
             for (var i = 0; i < data.length; i++) {
+                //todo 下面的data[i].$key$根据实际情况更改
                 selIDs.push(data[i].$key$);
             }
             switch (obj.event) {
                 case 'delete':
-                    layer.confirm('真的删除选中的' + data.length + "条记录么？", function (index) {
-                        $.ajax({
-                            url: "${ctx}${urlBase}/del?ids=" + selIDs,
-                            method: 'post',
-                            success: function (res) {
-                                delAfter(res);
-                            }
+                    if (data.length) {
+                        layer.confirm('真的删除选中的' + data.length + "条记录么？", function (index) {
+                            $.ajax({
+                                url: "${ctx}${urlBase}/del?ids=" + selIDs,
+                                method: 'post',
+                                success: function (res) {
+                                    delAfter(res);
+                                }
+                            });
                         });
-                    });
+                    } else {
+                        layer.msg("请选择需要删除的记录");
+                    }
                     break;
                 case 'add':
                     xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit', open_width, open_height);
@@ -121,6 +125,7 @@
             if (obj.event === 'del') {
                 layer.confirm('真的删除这行记录么？', function (index) {
                     $.ajax({
+                        //todo 下面的data.$key$根据实际情况更改
                         url: "${ctx}${urlBase}/del?ids=" + data.$key$,
                         method: 'post',
                         success: function (res) {
@@ -129,6 +134,7 @@
                     });
                 });
             } else if (obj.event === 'edit') {
+                //todo 下面的data.$key$根据实际情况更改
                 xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$, open_width, open_height);
             }
         });

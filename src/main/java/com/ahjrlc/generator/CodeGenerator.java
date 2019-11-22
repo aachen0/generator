@@ -3,11 +3,13 @@ package com.ahjrlc.generator;
 
 import com.ahjrlc.generator.service.TableService;
 import com.ahjrlc.generator.service.impl.TableServiceImpl;
+import com.ahjrlc.generator.util.CommonUtil;
 import com.ahjrlc.generator.util.LayUiTable;
 import com.ahjrlc.generator.util.LayUiTableColumn;
 import org.springframework.util.Assert;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.ahjrlc.generator.util.CommonUtil.camel;
@@ -17,6 +19,15 @@ import static com.ahjrlc.generator.util.CommonUtil.toJavaType;
  * @author aachen0
  */
 public class CodeGenerator {
+    public static final String TYPE_ALL = "all";
+    public static final String TYPE_CONTROLLER = "controller";
+    public static final String TYPE_SERVICE = "service";
+    public static final String TYPE_SERVICE_IMPL = "serviceImpl";
+    public static final String TYPE_JSP_INDEX = "index";
+    public static final String TYPE_JSP_EDIT = "edit";
+    public static final String TYPE_JSP_DETAILS = "details";
+    public static final String TYPE_JSP_ALL = "all";
+
     private TableService tableService = new TableServiceImpl();
     private ResourceBundle bundle;
     private String projectDir;
@@ -27,7 +38,18 @@ public class CodeGenerator {
         this.bundle = ResourceBundle.getBundle(config);
         this.projectDir = bundle.getString("project.base.dir");
         this.basePackage = bundle.getString("base.package");
-        this.dbName = bundle.getString("db.name");
+        String url = bundle.getString("jdbc.url");
+        this.dbName = parseDbName(url);
+    }
+
+    private String parseDbName(String jdbcUrl) {
+        int indexStart = jdbcUrl.lastIndexOf("/")+1;
+        int endStart = jdbcUrl.indexOf("?");
+        if (endStart < 0) {
+            return jdbcUrl.substring(indexStart);
+        } else {
+            return jdbcUrl.substring(indexStart, endStart);
+        }
     }
 
     public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc) {
@@ -38,10 +60,10 @@ public class CodeGenerator {
 
     public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
         String modelDesc = tableService.getTableComment(bundle, dbName, tableName);
-        Assert.notNull(modelDesc,"未找到指定的数据表信息："+dbName+"."+tableName);
+        Assert.notNull(modelDesc, "未找到指定的数据表信息：" + dbName + "." + tableName);
 //        封装数据列表中的表头js参数
         StringBuilder cols = new StringBuilder();
-        LayUiTable layUiTable = tableService.getLayUiTable(bundle,dbName, tableName);
+        LayUiTable layUiTable = tableService.getLayUiTable(bundle, dbName, tableName);
         List<LayUiTableColumn> columns = layUiTable.getCols();
 //        封装实体编辑页面input标签html
         StringBuilder fieldInputs = new StringBuilder();
@@ -60,7 +82,8 @@ public class CodeGenerator {
         params.put("$key$", camel(layUiTable.getKeyName(), false));
         params.put("${entityDesc}", modelDesc);
         params.put("${urlBase}", urlBase);
-        params.put("${searchField}", searchField);
+        params.put("${searchField$}", searchField);
+        params.put("${SearchField$}", camel(searchField,true));
         params.put("${searchFieldDesc}", searchFieldDesc);
         params.put("${cols}", cols.toString());
         params.put("${fieldInputs}", fieldInputs.toString());
@@ -73,13 +96,13 @@ public class CodeGenerator {
         try {
             boolean result = false;
             switch (type) {
-                case "index":
+                case TYPE_JSP_INDEX:
                     result = instanceFile(indexTemplete, params, indexJsp);
                     break;
-                case "edit":
+                case TYPE_JSP_EDIT:
                     result = instanceFile(editTemplete, params, editJsp);
                     break;
-                case "all":
+                case TYPE_JSP_ALL:
                     result = instanceFile(indexTemplete, params, indexJsp) && instanceFile(editTemplete, params, editJsp);
                 default:
             }
@@ -106,10 +129,10 @@ public class CodeGenerator {
      * @return 所有代码成功生产返回true，否则返回false
      */
     public boolean generateControllerAndService(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
-        String modelDescription = tableService.getTableComment(bundle,dbName, tableName);
-        Assert.notNull(modelDescription,"未找到指定的数据表信息："+dbName+"."+tableName);
-        LayUiTable table = tableService.getLayUiTable(bundle,dbName, tableName);
-        Assert.notNull(table,"未找到指定的数据表信息："+dbName+"."+tableName);
+        String modelDescription = tableService.getTableComment(bundle, dbName, tableName);
+        Assert.notNull(modelDescription, "未找到指定的数据表信息：" + dbName + "." + tableName);
+        LayUiTable table = tableService.getLayUiTable(bundle, dbName, tableName);
+        Assert.notNull(table, "未找到指定的数据表信息：" + dbName + "." + tableName);
         char separator = File.separatorChar;
         String baseDir = projectDir +
                 separator + "src" +
@@ -117,7 +140,7 @@ public class CodeGenerator {
                 separator + "java" +
                 separator + basePackage.replace('.', separator);
         String entityClassName = camel(tableName, true);
-        String entityName = camel(tableName,false);
+        String entityName = camel(tableName, false);
         Map<String, String> params = new HashMap<>();
         params.put("com.ahjrlc.generator", basePackage);
         params.put("$Template$", entityClassName);
@@ -129,12 +152,14 @@ public class CodeGenerator {
         params.put("$key$", camel(keyName, false));
         params.put("$Key$", camel(keyName, true));
         params.put("$searchField$", searchField);
+        params.put("$SearchField$", camel(searchField,true));
         params.put("${searchFieldDesc}", searchFieldDesc);
-        if (table.getPriCount()==1){
-            String saveKey = entityName+".get"+camel(keyName,true)+"()";
-            params.put("${saveKey}",saveKey);
-        }else {
-            params.put("${saveKey}",entityName);
+        params.put("${dataTime}", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(System.currentTimeMillis()));
+        if (table.getPriCount() == 1) {
+            String saveKey = entityName + ".get" + camel(keyName, true) + "()";
+            params.put("${saveKey}", saveKey);
+        } else {
+            params.put("${saveKey}", entityName);
         }
 
         InputStream controllerTemp = this.getClass().getResourceAsStream("/template/layui/Controller.temp");
@@ -147,16 +172,16 @@ public class CodeGenerator {
         try {
             boolean result = false;
             switch (type) {
-                case "service":
+                case TYPE_SERVICE:
                     result = instanceFile(serviceTemp, params, serviceFile);
                     break;
-                case "serviceImpl":
+                case TYPE_SERVICE_IMPL:
                     result = instanceFile(serviceTempImpl, params, serviceFileImpl);
                     break;
-                case "controller":
+                case TYPE_CONTROLLER:
                     result = instanceFile(controllerTemp, params, controllerFile);
                     break;
-                case "all":
+                case TYPE_ALL:
                     result = instanceFile(serviceTemp, params, serviceFile) && instanceFile(serviceTempImpl, params, serviceFileImpl) && instanceFile(controllerTemp, params, controllerFile);
                 default:
 
@@ -167,7 +192,6 @@ public class CodeGenerator {
             throw new RuntimeException("写入文件失败");
         }
     }
-
 
     /**
      * 用map中的参数替换文件中的模版文件中的占位符，并写入到目标文件

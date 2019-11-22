@@ -46,12 +46,12 @@ public interface $Template$Service {
     /**
      * 分页列出符合条件的${entityDesc}
      *
-     * @param page              分页第几页
-     * @param limit             分页每页大小
-     * @param part$searchField$ $searchField$模糊查询
+     * @param page  分页第几页
+     * @param limit 分页每页大小
+     * @param search 筛选条件
      * @return 符合条件的${entityDesc}列表
      */
-    List<$Template$> listPaged(Integer page, Integer limit, String part$searchField$);
+    List<$Template$> listPaged(Integer page, Integer limit, $Template$ search);
 
     /**
      * 列出所有${entityDesc}

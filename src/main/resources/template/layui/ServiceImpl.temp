@@ -23,6 +23,7 @@ public class $Template$ServiceImpl implements $Template$Service {
 
     @Override
     public Integer saveByKey($Template$ $template$) {
+//        如果是单主键，下面的get参数需要取出主键的值,所以要用${saveKey}替换$template$
         $Template$ ori = getByKey(${saveKey});
         if (ori == null) {
             return mapper.insert($template$) > 0 ? 1 : -1;
@@ -38,22 +39,20 @@ public class $Template$ServiceImpl implements $Template$Service {
 
     @Override
     public int delByKeys(List<Object> $key$s) {
+        int i = 0;
         if ($key$s != null && $key$s.size() > 0) {
-            $Template$Example example = new $Template$Example();
-            $Template$Example.Criteria criteria = example.createCriteria();
-            criteria.and$Key$In($key$s);
-            return mapper.deleteByExample(example);
+            for (Object $key$ : $key$s) {
+                i += mapper.deleteByPrimaryKey($key$);
+            }
         }
-        return -1;
+        return i;
     }
 
     @Override
-    public List<$Template$> listPaged(Integer page, Integer limit, String part$searchField$) {
+    public List<$Template$> listPaged(Integer page, Integer limit, $Template$ search) {
         $Template$Example example = new $Template$Example();
         $Template$Example.Criteria criteria = example.createCriteria();
-        if (part$searchField$ != null && part$searchField$.trim().length() > 0) {
-            criteria.and$searchField$Like("%" + part$searchField$ + "%");
-        }
+//       todo 查询逻辑根据实际从$key$中获取
         PageHelper.startPage(page, limit);
         return mapper.selectByExample(example);
     }

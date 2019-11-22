@@ -105,132 +105,132 @@ public class $Template$Example {
         }
 
         public Criteria and$Key$IsNull() {
-            addCriterion("$key$ is null");
+            addCriterion("key is null");
             return (Criteria) this;
         }
 
         public Criteria and$Key$IsNotNull() {
-            addCriterion("$key$ is not null");
+            addCriterion("key is not null");
             return (Criteria) this;
         }
 
         public Criteria and$Key$EqualTo(Object value) {
-            addCriterion("$key$ =", value, "$Key$");
+            addCriterion("key =", value, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$NotEqualTo(Object value) {
-            addCriterion("$key$ <>", value, "$Key$");
+            addCriterion("key <>", value, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$GreaterThan(Object value) {
-            addCriterion("$key$ >", value, "$Key$");
+            addCriterion("key >", value, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$GreaterThanOrEqualTo(Object value) {
-            addCriterion("$key$ >=", value, "$Key$");
+            addCriterion("key >=", value, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$LessThan(Object value) {
-            addCriterion("$key$ <", value, "$Key$");
+            addCriterion("key <", value, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$LessThanOrEqualTo(Object value) {
-            addCriterion("$key$ <=", value, "$Key$");
+            addCriterion("key <=", value, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$In(List<Object> values) {
-            addCriterion("$key$ in", values, "$Key$");
+            addCriterion("key in", values, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$NotIn(List<Object> values) {
-            addCriterion("$key$ not in", values, "$Key$");
+            addCriterion("key not in", values, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$Between(Object value1, Object value2) {
-            addCriterion("$key$ between", value1, value2, "$Key$");
+            addCriterion("key between", value1, value2, "$Key$");
             return (Criteria) this;
         }
 
         public Criteria and$Key$NotBetween(Object value1, Object value2) {
-            addCriterion("$key$ not between", value1, value2, "$Key$");
+            addCriterion("key not between", value1, value2, "$Key$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$IsNull() {
-            addCriterion("$searchField$ is null");
+        public Criteria and$SearchField$IsNull() {
+            addCriterion("search_field is null");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$IsNotNull() {
-            addCriterion("$searchField$ is not null");
+        public Criteria and$SearchField$IsNotNull() {
+            addCriterion("search_field is not null");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$EqualTo(String value) {
-            addCriterion("$searchField$ =", value, "$searchField$");
+        public Criteria and$SearchField$EqualTo(Object value) {
+            addCriterion("search_field =", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$NotEqualTo(String value) {
-            addCriterion("$searchField$ <>", value, "$searchField$");
+        public Criteria and$SearchField$NotEqualTo(Object value) {
+            addCriterion("search_field <>", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$GreaterThan(String value) {
-            addCriterion("$searchField$ >", value, "$searchField$");
+        public Criteria and$SearchField$GreaterThan(Object value) {
+            addCriterion("search_field >", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$GreaterThanOrEqualTo(String value) {
-            addCriterion("$searchField$ >=", value, "$searchField$");
+        public Criteria and$SearchField$GreaterThanOrEqualTo(Object value) {
+            addCriterion("search_field >=", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$LessThan(String value) {
-            addCriterion("$searchField$ <", value, "$searchField$");
+        public Criteria and$SearchField$LessThan(Object value) {
+            addCriterion("search_field <", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$LessThanOrEqualTo(String value) {
-            addCriterion("$searchField$ <=", value, "$searchField$");
+        public Criteria and$SearchField$LessThanOrEqualTo(Object value) {
+            addCriterion("search_field <=", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$Like(String value) {
-            addCriterion("$searchField$ like", value, "$searchField$");
+        public Criteria and$SearchField$Like(Object value) {
+            addCriterion("search_field like", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$NotLike(String value) {
-            addCriterion("$searchField$ not like", value, "$searchField$");
+        public Criteria and$SearchField$NotLike(Object value) {
+            addCriterion("search_field not like", value, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$In(List<String> values) {
-            addCriterion("$searchField$ in", values, "$searchField$");
+        public Criteria and$SearchField$In(List<Object> values) {
+            addCriterion("search_field in", values, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$NotIn(List<String> values) {
-            addCriterion("$searchField$ not in", values, "$searchField$");
+        public Criteria and$SearchField$NotIn(List<Object> values) {
+            addCriterion("search_field not in", values, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$Between(String value1, String value2) {
-            addCriterion("$searchField$ between", value1, value2, "$searchField$");
+        public Criteria and$SearchField$Between(Object value1, Object value2) {
+            addCriterion("search_field between", value1, value2, "$SearchField$");
             return (Criteria) this;
         }
 
-        public Criteria and$searchField$NotBetween(String value1, String value2) {
-            addCriterion("$searchField$ not between", value1, value2, "$searchField$");
+        public Criteria and$SearchField$NotBetween(Object value1, Object value2) {
+            addCriterion("search_field not between", value1, value2, "$SearchField$");
             return (Criteria) this;
         }
     }
