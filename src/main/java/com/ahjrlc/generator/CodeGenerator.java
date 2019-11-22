@@ -87,6 +87,9 @@ public class CodeGenerator {
         params.put("${searchFieldDesc}", searchFieldDesc);
         params.put("${cols}", cols.toString());
         params.put("${fieldInputs}", fieldInputs.toString());
+        if (layUiTable.getPriCount()>1){
+            params.put("ids","uuids");
+        }
         InputStream indexTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/index.jsp");
         InputStream editTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/edit.jsp");
         String jspBase = projectDir + "/src/main/webapp/WEB-INF/jsp";
@@ -160,6 +163,7 @@ public class CodeGenerator {
             params.put("${saveKey}", saveKey);
         } else {
             params.put("${saveKey}", entityName);
+            params.put("ids","uuids");
         }
 
         InputStream controllerTemp = this.getClass().getResourceAsStream("/template/layui/Controller.temp");
