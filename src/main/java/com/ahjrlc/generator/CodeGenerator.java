@@ -82,8 +82,8 @@ public class CodeGenerator {
         params.put("$key$", camel(layUiTable.getKeyName(), false));
         params.put("${entityDesc}", modelDesc);
         params.put("${urlBase}", urlBase);
-        params.put("${searchField$}", searchField);
-        params.put("${SearchField$}", camel(searchField,true));
+        params.put("${searchField}", searchField);
+        params.put("${SearchField}", camel(searchField,true));
         params.put("${searchFieldDesc}", searchFieldDesc);
         params.put("${cols}", cols.toString());
         params.put("${fieldInputs}", fieldInputs.toString());
@@ -169,7 +169,6 @@ public class CodeGenerator {
         InputStream controllerTemp = this.getClass().getResourceAsStream("/template/layui/Controller.temp");
         InputStream serviceTemp = this.getClass().getResourceAsStream("/template/layui/Service.temp");
         InputStream serviceTempImpl = this.getClass().getResourceAsStream("/template/layui/ServiceImpl.temp");
-        InputStream indexTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/index.jsp");
         File controllerFile = new File(baseDir + separator + "controller" + separator + entityClassName + "Controller.java");
         File serviceFile = new File(baseDir + separator + "service" + separator + entityClassName + "Service.java");
         File serviceFileImpl = new File(baseDir + separator + "service" + separator + "impl" + separator + entityClassName + "ServiceImpl.java");

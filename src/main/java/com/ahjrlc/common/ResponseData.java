@@ -1,4 +1,4 @@
-package com.ahjrlc.util;
+package com.ahjrlc.common;
 
 /**
  * layui列表分页数据封装,兼容标准响应相间格式

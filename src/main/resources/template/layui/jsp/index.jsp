@@ -26,14 +26,14 @@
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body ">
-                    <form class="layui-form layui-col-space5" action="${ctx}${urlBase}/index">
+                    <form class="layui-form layui-col-space5">
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="part${searchField}" id="part${searchField}"
+                            <input type="text" name="${searchField}"
                                    placeholder="${searchFieldDesc}搜索"
                                    autocomplete="off"
-                                   class="layui-input" value="${part${searchField}}"></div>
+                                   class="layui-input"></div>
                         <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                            <button class="layui-btn" lay-submit="" lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i></button>
                         </div>
                     </form>
@@ -56,24 +56,23 @@
     </script>
 </div>
 <script>
-    layui.use(['table', 'upload', 'layer'], function () {
+    layui.use(['table', 'upload', 'layer', 'form'], function () {
         var table = layui.table,
             layer = layui.layer,
+            form = layui.form,
             open_width = 600,// 弹窗宽度度
             open_height = 500;// 弹窗高度
         // 从cookie中取分页大小，如果没有值，则使用默认10
         var pageSizeLocal = get_cookie("pageSizeLocal");
         var pageSize = (pageSizeLocal > 0) ? pageSizeLocal : 10;
         // 渲染列表
-        table.render({
+        var $entity$TableIns = table.render({
             elem: '#list'
             , url: '${ctx}${urlBase}/list/paged'
-            , where: {
-                part${searchField}: $("#part${searchField}").val()
-            }
             , toolbar: '#toolbar'
             , cols: [[
-                {type: 'checkbox'}
+                {type: 'checkbox'},
+                {type: 'numbers', title: '序号', width: 60}
                 ${cols}, {fixed: 'right', width: 190, align: 'center', toolbar: '#option'}
             ]]
             , page: true
@@ -137,6 +136,12 @@
                 //todo 下面的data.$key$根据实际情况更改
                 xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$, open_width, open_height);
             }
+        });
+        form.on('submit(search)', function (d) {
+            $entity$TableIns.reload({
+                where: d.field
+            });
+            return false;
         });
     });
 </script>

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.ahjrlc.common.CommonUtil.isEmpty;
+
 
 @Service
 public class $Template$ServiceImpl implements $Template$Service {
@@ -53,6 +55,9 @@ public class $Template$ServiceImpl implements $Template$Service {
         $Template$Example example = new $Template$Example();
         $Template$Example.Criteria criteria = example.createCriteria();
 //       todo 查询逻辑根据实际从$key$中获取
+        if(!isEmpty(search.get$SearchField$())){
+            criteria.and$SearchField$Like("%"+search.get$SearchField$()+"%");
+        }
         PageHelper.startPage(page, limit);
         return mapper.selectByExample(example);
     }

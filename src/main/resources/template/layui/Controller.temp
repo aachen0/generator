@@ -2,7 +2,7 @@ package com.ahjrlc.generator.controller;
 
 import com.ahjrlc.generator.model.$Template$;
 import com.ahjrlc.generator.service.$Template$Service;
-import com.ahjrlc.util.ResponseData;
+import com.ahjrlc.common.ResponseData;
 import com.github.pagehelper.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,8 +34,7 @@ public class $Template$Controller {
     @GetMapping("/index")
     @ApiOperation("进入${entityDesc}列表视图")
     @ApiImplicitParam(value = "查询条件", name = "search")
-    public String index$Template$(HttpServletRequest request, $Template$ search) {
-        request.setAttribute("search", search);
+    public String index$Template$() {
         return "${urlBase}/index";
     }
 
