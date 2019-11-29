@@ -78,7 +78,7 @@ public class $Template$Controller {
     @ApiOperation(value = "增加或修改一个${entityDesc}信息，已标准响应格式返回保存结果")
     public ResponseData save$Template$(@Validated $Template$ $template$) {
         int code = $template$Service.saveByKey($template$);
-        return new ResponseData().setCode(200).setData(code);
+        return new ResponseData().setCode(200).setData(code).setMsg("保存成功");
     }
 
 

@@ -12,7 +12,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.ahjrlc.generator.util.CommonUtil.camel;
+import static com.ahjrlc.common.CommonUtil.camel;
+import static com.ahjrlc.common.JdbcUtil.parseDbName;
 import static com.ahjrlc.generator.util.CommonUtil.toJavaType;
 
 /**
@@ -42,15 +43,7 @@ public class CodeGenerator {
         this.dbName = parseDbName(url);
     }
 
-    private String parseDbName(String jdbcUrl) {
-        int indexStart = jdbcUrl.lastIndexOf("/")+1;
-        int endStart = jdbcUrl.indexOf("?");
-        if (endStart < 0) {
-            return jdbcUrl.substring(indexStart);
-        } else {
-            return jdbcUrl.substring(indexStart, endStart);
-        }
-    }
+
 
     public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc) {
         boolean i = generateControllerAndService(tableName, urlBase, searchField, searchFieldDesc, "all");

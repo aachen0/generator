@@ -55,6 +55,7 @@
         </div>
     </script>
 </div>
+<script src="${ctx}/static/js/cookies.js"></script>
 <script>
     layui.use(['table', 'upload', 'layer', 'form'], function () {
         var table = layui.table,
