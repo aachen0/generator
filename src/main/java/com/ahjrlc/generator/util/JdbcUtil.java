@@ -1,6 +1,7 @@
 package com.ahjrlc.generator.util;
 
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
@@ -142,5 +143,4 @@ public class JdbcUtil {
         // 打印出来
         System.out.println(sql);
     }
-
 }

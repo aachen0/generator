@@ -3,9 +3,9 @@ package com.ahjrlc.generator;
 
 import com.ahjrlc.generator.service.TableService;
 import com.ahjrlc.generator.service.impl.TableServiceImpl;
-import com.ahjrlc.generator.util.CommonUtil;
 import com.ahjrlc.generator.util.LayUiTable;
 import com.ahjrlc.generator.util.LayUiTableColumn;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.io.*;
@@ -19,6 +19,7 @@ import static com.ahjrlc.generator.util.CommonUtil.toJavaType;
 /**
  * @author aachen0
  */
+@Slf4j
 public class CodeGenerator {
     public static final String TYPE_ALL = "all";
     public static final String TYPE_CONTROLLER = "controller";
@@ -44,44 +45,54 @@ public class CodeGenerator {
     }
 
 
-
-    public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc) {
-        boolean i = generateControllerAndService(tableName, urlBase, searchField, searchFieldDesc, "all");
-        boolean j = generateJsp(tableName, urlBase, searchField, searchFieldDesc, "all");
+    public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc,
+                                    String... referencedTable) {
+        boolean i = generateControllerAndService(tableName, urlBase, searchField, searchFieldDesc, "all",referencedTable);
+        boolean j = generateJsp(tableName, urlBase, searchField, searchFieldDesc, "all",referencedTable);
         return i && j;
     }
 
-    public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
+    public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc,
+                               String type,String... referencedTable) {
         String modelDesc = tableService.getTableComment(bundle, dbName, tableName);
         Assert.notNull(modelDesc, "未找到指定的数据表信息：" + dbName + "." + tableName);
 //        封装数据列表中的表头js参数
         StringBuilder cols = new StringBuilder();
-        LayUiTable layUiTable = tableService.getLayUiTable(bundle, dbName, tableName);
-        List<LayUiTableColumn> columns = layUiTable.getCols();
+        LayUiTable table = tableService.getLayUiTable(bundle, dbName, tableName,referencedTable);
+        Assert.notNull(table, "未找到指定的数据表信息：" + dbName + "." + tableName);
+        String keyType = table.getKeyType();
+        Assert.notNull(keyType, "无主键数据表，暂不支持生成代码");
+        List<LayUiTableColumn> columns = table.getCols();
 //        封装实体编辑页面input标签html
         StringBuilder fieldInputs = new StringBuilder();
         if (columns != null) {
             for (LayUiTableColumn col : columns) {
-                cols.append(",").append(col.toString()).append("\n                ");
-//                主键不提供输入
-                if (col.getField().equals(layUiTable.getKeyName())) {
+                //                主键和外键不提供输入
+                Boolean isPri = col.getIsPri();
+                Boolean isFor = col.getIsForeign();
+                if (isPri != null && isPri) {
                     continue;
                 }
                 fieldInputs.append(col.toInputString()).append("\n");
+//                外键不在列表中显示
+                if ((isFor != null && isFor)) {
+                    continue;
+                }
+                cols.append(",").append(col.toString()).append("\n                ");
             }
         }
         Map<String, String> params = new HashMap<>();
         params.put("$entity$", camel(tableName, false));
-        params.put("$key$", camel(layUiTable.getKeyName(), false));
+        params.put("$key$", camel(table.getKeyName(), false));
         params.put("${entityDesc}", modelDesc);
         params.put("${urlBase}", urlBase);
         params.put("${searchField}", searchField);
-        params.put("${SearchField}", camel(searchField,true));
+        params.put("${SearchField}", camel(searchField, true));
         params.put("${searchFieldDesc}", searchFieldDesc);
         params.put("${cols}", cols.toString());
         params.put("${fieldInputs}", fieldInputs.toString());
-        if (layUiTable.getPriCount()>1){
-            params.put("ids","uuids");
+        if (table.getPriCount() > 1) {
+            params.put("ids", "uuids");
         }
         InputStream indexTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/index.jsp");
         InputStream editTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/edit.jsp");
@@ -124,11 +135,14 @@ public class CodeGenerator {
      * @param searchField 模糊搜索字段名驼峰形式（首字母大写）
      * @return 所有代码成功生产返回true，否则返回false
      */
-    public boolean generateControllerAndService(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
+    public boolean generateControllerAndService(String tableName, String urlBase, String searchField,
+                                                String searchFieldDesc, String type,String... referencedTable) {
         String modelDescription = tableService.getTableComment(bundle, dbName, tableName);
         Assert.notNull(modelDescription, "未找到指定的数据表信息：" + dbName + "." + tableName);
-        LayUiTable table = tableService.getLayUiTable(bundle, dbName, tableName);
+        LayUiTable table = tableService.getLayUiTable(bundle, dbName, tableName,referencedTable);
         Assert.notNull(table, "未找到指定的数据表信息：" + dbName + "." + tableName);
+        String keyType = table.getKeyType();
+        Assert.notNull(keyType, "无主键数据表，暂不支持生成代码");
         char separator = File.separatorChar;
         String baseDir = projectDir +
                 separator + "src" +
@@ -143,12 +157,12 @@ public class CodeGenerator {
         params.put("${entityDesc}", modelDescription);
         params.put("${urlBase}", urlBase);
         params.put("$template$", entityName);
-        params.put("Object", toJavaType(table.getKeyType()));
+        params.put("Object", toJavaType(keyType));
         String keyName = table.getKeyName();
         params.put("$key$", camel(keyName, false));
         params.put("$Key$", camel(keyName, true));
         params.put("$searchField$", searchField);
-        params.put("$SearchField$", camel(searchField,true));
+        params.put("$SearchField$", camel(searchField, true));
         params.put("${searchFieldDesc}", searchFieldDesc);
         params.put("${dataTime}", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(System.currentTimeMillis()));
         if (table.getPriCount() == 1) {
@@ -156,7 +170,7 @@ public class CodeGenerator {
             params.put("${saveKey}", saveKey);
         } else {
             params.put("${saveKey}", entityName);
-            params.put("ids","uuids");
+            params.put("ids", "uuids");
         }
 
         InputStream controllerTemp = this.getClass().getResourceAsStream("/template/layui/Controller.temp");

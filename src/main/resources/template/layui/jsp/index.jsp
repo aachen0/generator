@@ -55,7 +55,6 @@
         </div>
     </script>
 </div>
-<script src="${ctx}/static/js/cookies.js"></script>
 <script>
     layui.use(['table', 'upload', 'layer', 'form'], function () {
         var table = layui.table,
@@ -63,9 +62,6 @@
             form = layui.form,
             open_width = 600,// 弹窗宽度度
             open_height = 500;// 弹窗高度
-        // 从cookie中取分页大小，如果没有值，则使用默认10
-        var pageSizeLocal = get_cookie("pageSizeLocal");
-        var pageSize = (pageSizeLocal > 0) ? pageSizeLocal : 10;
         // 渲染列表
         var $entity$TableIns = table.render({
             elem: '#list'
@@ -77,16 +73,12 @@
                 ${cols}, {fixed: 'right', width: 190, align: 'center', toolbar: '#option'}
             ]]
             , page: true
-            , limit: pageSize
+            , limit: localLimit
             , limits: layui_limits
             , even: true
             , size: 'sm'
             , done: function (res, curr, count) {
-                // 如果分页大小发生变化，此回掉函数更新cookie中的分页大小
-                var newLimit = (res.limit);
-                if (pageSize !== newLimit) {
-                    document.cookie = "pageSizeLocal=" + newLimit;
-                }
+                updateLimit(res.limit);
             }
         });
         //头工具栏事件
@@ -106,7 +98,7 @@
                                 url: "${ctx}${urlBase}/del?ids=" + selIDs,
                                 method: 'post',
                                 success: function (res) {
-                                    delAfter(res);
+                                    delAfter(res,$entity$TableIns);
                                 }
                             });
                         });
@@ -115,7 +107,7 @@
                     }
                     break;
                 case 'add':
-                    xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit', open_width, open_height);
+                    xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit', open_width, open_height,false,$entity$TableIns);
                     break;
             }
         });
@@ -129,13 +121,13 @@
                         url: "${ctx}${urlBase}/del?ids=" + data.$key$,
                         method: 'post',
                         success: function (res) {
-                            delAfter(res);
+                            delAfter(res,$entity$TableIns);
                         }
                     });
                 });
             } else if (obj.event === 'edit') {
                 //todo 下面的data.$key$根据实际情况更改
-                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$, open_width, open_height);
+                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$, open_width, open_height,false,$entity$TableIns);
             }
         });
         form.on('submit(search)', function (d) {

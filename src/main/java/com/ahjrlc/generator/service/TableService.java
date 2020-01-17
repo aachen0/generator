@@ -25,9 +25,10 @@ public interface TableService {
      * @param bundle 数据库链接配置
      * @param dbName    数据库名
      * @param tableName 表名
+     * @param referencedTable 外键表名
      * @return 列
      */
-    LayUiTable getLayUiTable(ResourceBundle bundle,String dbName, String tableName);
+    LayUiTable getLayUiTable(ResourceBundle bundle,String dbName, String tableName,String... referencedTable);
 
     /**
      * 列出数据库表名为tableName的表的comment
