@@ -19,12 +19,12 @@
         <jackson.version>2.9.5</jackson.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>com.ahjrlc</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0.1</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.ahjrlc</groupId>-->
+            <!--<artifactId>common</artifactId>-->
+            <!--<version>1.0.1</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
         <!--jsp需要的依赖，tomcat自带，不需要打包-->
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
@@ -189,6 +189,13 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
     <repositories>
         <repository>
