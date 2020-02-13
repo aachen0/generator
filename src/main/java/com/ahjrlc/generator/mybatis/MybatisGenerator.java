@@ -10,6 +10,7 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * 逆向工程工具类，进行了适度封装,根据指定的generator配置文件一键生成实体类，接口类，sql映射文件，同时在控制台输出生成过程信息
@@ -19,6 +20,7 @@ import java.util.List;
  * IDE:IntelliJ IDEA
  */
 public class MybatisGenerator {
+    private Logger log = Logger.getAnonymousLogger();
     /**
      * 逆向工程的配置文件
      */
@@ -54,7 +56,7 @@ public class MybatisGenerator {
             e.printStackTrace();
         }
         for (String warning : warnings) {
-            System.out.println("[WARN] generator:-->" + warning);
+            log.warning("[WARN] generator:-->" + warning);
         }
     }
 

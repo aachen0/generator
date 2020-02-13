@@ -7,41 +7,99 @@
 
     <context id="mysql" targetRuntime="MyBatis3">
         <commentGenerator type="com.ahjrlc.generator.mybatis.SimpleCommentGenerator">
-            <property name="addRemarkComments" value="true" />
+            <property name="addRemarkComments" value="true"/>
+            <property name="suppressDate" value="false"/>
+            <property name="suppressAllComments" value="false"/>
             <property name="dateFormat" value="yyyy/MM/dd HH:mm:ss"/>
         </commentGenerator>
-
         <jdbcConnection driverClass="${jdbc.driverClass}"
                         connectionURL="${jdbc.url}"
                         userId="${jdbc.userId}"
                         password="${jdbc.password}">
+            <!--            读取数据库表注释-->
+            <property name="useInformationSchema" value="true"/>
         </jdbcConnection>
 
-        <javaTypeResolver >
-            <property name="forceBigDecimals" value="false" />
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
-
-        <javaModelGenerator targetPackage="com.ahjrlc.example.model" targetProject="src/test/java/">
-            <property name="enableSubPackages" value="true" />
-            <property name="trimStrings" value="true" />
+        <!--实体类位置-->
+        <javaModelGenerator targetPackage="${base.package}.model" targetProject="src/test/java/">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
         </javaModelGenerator>
-
-        <sqlMapGenerator targetPackage="mapper"  targetProject="src/test/resources/">
-            <property name="enableSubPackages" value="true" />
+        <!--xml位置-->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/test/resources/">
+            <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
-
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.ahjrlc.example.dao"  targetProject="src/test/java/">
-            <property name="enableSubPackages" value="true" />
+        <!--接口位置-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="${base.package}.dao" targetProject="src/test/java/">
+            <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
-
-        <table schema="dict" tableName="user" domainObjectName="User" >
-            <property name="useActualColumnNames" value="false"/>
-            <generatedKey column="id" sqlStatement="MySQL" identity="true" />
+        <!--数据表配置-->
+        <table tableName="sys_user" domainObjectName="SysUser"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="true">
+            <columnOverride column="sex" javaType="java.lang.Integer"/>
+            <columnOverride column="status" javaType="java.lang.Integer"/>
+            <columnOverride column="create_where" javaType="java.lang.Integer"/>
+            <columnOverride column="deleted" javaType="java.lang.Integer"/>
         </table>
-        <!--<table tableName="abbreviation" domainObjectName="Abbreviation" >-->
-            <!--<property name="useActualColumnNames" value="false"/>-->
-            <!--<generatedKey column="id" sqlStatement="MySQL" identity="true" />-->
-        <!--</table>-->
+
+        <table tableName="sys_dept" domainObjectName="SysDept"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="true">
+            <columnOverride column="status" javaType="java.lang.Integer"/>
+            <columnOverride column="deleted" javaType="java.lang.Integer"/>
+        </table>
+
+        <table tableName="sys_log" domainObjectName="SysLog"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="true">
+        </table>
+        <table tableName="sys_permission" domainObjectName="SysPermission"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="true">
+            <columnOverride column="type" javaType="java.lang.Integer"/>
+            <columnOverride column="status" javaType="java.lang.Integer"/>
+            <columnOverride column="deleted" javaType="java.lang.Integer"/>
+        </table>
+        <table tableName="sys_role" domainObjectName="SysRole"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="true">
+            <columnOverride column="status" javaType="java.lang.Integer"/>
+            <columnOverride column="deleted" javaType="java.lang.Integer"/>
+        </table>
+        <table tableName="sys_role_permission" domainObjectName="SysRolePermission"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="true">
+        </table>
+
+        <table tableName="sys_user_role" domainObjectName="SysUserRole"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="true">
+        </table>
 
     </context>
 </generatorConfiguration>
