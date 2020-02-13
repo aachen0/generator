@@ -196,7 +196,9 @@ public class CodeGenerator {
                 String line;
                 while ((line = br.readLine()) != null) {
                     for (Map.Entry<String, String> entry : params.entrySet()) {
-                        line = line.replace(entry.getKey(), entry.getValue());
+                        if (entry.getValue()!=null){
+                            line = line.replace(entry.getKey(), entry.getValue());
+                        }
                     }
                     bw.write(line + "\n");
                 }
