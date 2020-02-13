@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import static com.gitee.aachen0.util.CommonUtils.isEmpty;
+
+import static com.ahjrlc.common.CommonUtil.isEmpty;
 
 
 @Service
@@ -18,47 +19,49 @@ public class $Template$ServiceImpl implements $Template$Service {
     $Template$Mapper mapper;
 
     @Override
-    public $Template$ getBy$Key$(Object $key$) {
+    public $Template$ getByKey(Object $key$) {
         return mapper.selectByPrimaryKey($key$);
     }
 
     @Override
-    public String saveBy$Key$($Template$ $template$) {
-        $Template$ ori = getBy$Key$($template$.get$Key$());
+    public Integer saveByKey($Template$ $template$) {
+//        如果是单主键，下面的get参数需要取出主键的值,所以要用${saveKey}替换$template$
+        $Template$ ori = getByKey($template$);
         if (ori == null) {
-            return "add:" + mapper.insert($template$);
+            return mapper.insert($template$) > 0 ? 1 : -1;
         } else {
-            return "edit:" + mapper.updateByPrimaryKeySelective($template$);
+            return mapper.updateByPrimaryKeySelective($template$) > 0 ? 2 : 0;
         }
     }
 
     @Override
-    public Integer delBy$Key$(Object $key$) {
+    public Integer delByKey(Object $key$) {
         return mapper.deleteByPrimaryKey($key$);
     }
 
     @Override
-    public int delBy$Key$s(List<Object> $key$s) {
-        if (!isEmpty($key$s)) {
-            $Template$Example example = new $Template$Example();
-            $Template$Example.Criteria criteria = example.createCriteria();
-            criteria.and$Key$In($key$s);
-            return mapper.deleteByExample(example);
+    public int delByKeys(List<Object> $key$s) {
+        int i = 0;
+        if ($key$s != null && $key$s.size() > 0) {
+            for (Object $key$ : $key$s) {
+                i += mapper.deleteByPrimaryKey($key$);
+            }
         }
-        return -1;
+        return i;
     }
 
     @Override
-    public List<$Template$> listPaged(Integer page, Integer limit, String part$searchField$) {
+    public List<$Template$> listPaged(Integer page, Integer limit, $Template$ search) {
         $Template$Example example = new $Template$Example();
         $Template$Example.Criteria criteria = example.createCriteria();
-        if (!isEmpty(part$searchField$)) {
-            criteria.and$searchField$Like("%" + part$searchField$ + "%");
+//       todo 查询逻辑根据实际从$key$中获取
+        if(!isEmpty(search.get$SearchField$())){
+            criteria.and$SearchField$Like("%"+search.get$SearchField$()+"%");
         }
         PageHelper.startPage(page, limit);
         return mapper.selectByExample(example);
     }
-    
+
     @Override
     public List<$Template$> list() {
         return mapper.selectByExample(new $Template$Example());

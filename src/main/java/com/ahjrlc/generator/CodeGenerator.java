@@ -1,81 +1,99 @@
-package com.ahjrlc.util;
+package com.ahjrlc.generator;
 
 
 import com.ahjrlc.generator.service.TableService;
 import com.ahjrlc.generator.service.impl.TableServiceImpl;
+import com.ahjrlc.generator.util.LayUiTable;
+import com.ahjrlc.generator.util.LayUiTableColumn;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.ahjrlc.util.CommonUtil.camel;
-import static com.ahjrlc.util.CommonUtil.toJavaType;
+import static com.ahjrlc.common.CommonUtil.camel;
+import static com.ahjrlc.common.JdbcUtil.parseDbName;
+import static com.ahjrlc.generator.util.CommonUtil.toJavaType;
 
 /**
- * 核心类，代码生成器
  * @author aachen0
  */
+@Slf4j
 public class CodeGenerator {
+    public static final String TYPE_ALL = "all";
+    public static final String TYPE_CONTROLLER = "controller";
+    public static final String TYPE_SERVICE = "service";
+    public static final String TYPE_SERVICE_IMPL = "serviceImpl";
+    public static final String TYPE_JSP_INDEX = "index";
+    public static final String TYPE_JSP_EDIT = "edit";
+    public static final String TYPE_JSP_DETAILS = "details";
+    public static final String TYPE_JSP_ALL = "all";
+
     private TableService tableService = new TableServiceImpl();
+    private ResourceBundle bundle;
     private String projectDir;
     private String basePackage;
     private String dbName;
 
-    public CodeGenerator(ResourceBundle config) {
-        this.projectDir = config.getString("project.base.dir");
-        this.basePackage = config.getString("base.package");
-        this.dbName = config.getString("db.name");
+    public CodeGenerator(String config) {
+        this.bundle = ResourceBundle.getBundle(config);
+        this.projectDir = bundle.getString("project.base.dir");
+        this.basePackage = bundle.getString("base.package");
+        String url = bundle.getString("jdbc.url");
+        this.dbName = parseDbName(url);
     }
 
-    /**
-     * 生成指定数据表后台全套
-     * @param tableName 表名
-     * @param urlBase 模块对外访问url接口前缀
-     * @param searchField 需要模糊搜索的字段
-     * @param searchFieldDesc 需要模糊搜索字段的说明
-     * @return 生成是否成功
-     */
-    public boolean generateServiceJsp(String tableName, String urlBase, String searchField, String searchFieldDesc) {
-        boolean i = generateControllerService(tableName, urlBase, searchField, searchFieldDesc, "all");
-        boolean j = generateJsp(tableName, urlBase, searchField, searchFieldDesc, "all");
+
+    public boolean generateTableMvc(String tableName, String urlBase, String searchField, String searchFieldDesc,
+                                    String... referencedTable) {
+        boolean i = generateControllerAndService(tableName, urlBase, searchField, searchFieldDesc, "all",referencedTable);
+        boolean j = generateJsp(tableName, urlBase, searchField, searchFieldDesc, "all",referencedTable);
         return i && j;
     }
 
-    /**
-     * 生成指定数据表Jsp部分
-     * @param tableName 表名
-     * @param urlBase 模块对外访问url接口前缀
-     * @param searchField 需要模糊搜索的字段
-     * @param searchFieldDesc 需要模糊搜索字段的说明
-     * @param type jsp页面类型：edit/index/all
-     * @return 生成s否成功
-     */
-    public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
-        String modelDesc = tableService.getTableComment(dbName, tableName);
+    public boolean generateJsp(String tableName, String urlBase, String searchField, String searchFieldDesc,
+                               String type,String... referencedTable) {
+        String modelDesc = tableService.getTableComment(bundle, dbName, tableName);
+        Assert.notNull(modelDesc, "未找到指定的数据表信息：" + dbName + "." + tableName);
 //        封装数据列表中的表头js参数
         StringBuilder cols = new StringBuilder();
-        LayUiTable layUiTable = tableService.getLayUiTable(dbName, tableName);
-        List<LayUiTableColumn> columns = layUiTable.getCols();
+        LayUiTable table = tableService.getLayUiTable(bundle, dbName, tableName,referencedTable);
+        Assert.notNull(table, "未找到指定的数据表信息：" + dbName + "." + tableName);
+        String keyType = table.getKeyType();
+        Assert.notNull(keyType, "无主键数据表，暂不支持生成代码");
+        List<LayUiTableColumn> columns = table.getCols();
 //        封装实体编辑页面input标签html
         StringBuilder fieldInputs = new StringBuilder();
         if (columns != null) {
             for (LayUiTableColumn col : columns) {
-                cols.append(",").append(col.toString()).append("\n                ");
-//                主键不提供输入
-                if (col.getField().equals(layUiTable.getKeyName())){
+                //                主键和外键不提供输入
+                Boolean isPri = col.getIsPri();
+                Boolean isFor = col.getIsForeign();
+                if (isPri != null && isPri) {
                     continue;
                 }
-                fieldInputs.append(col.toInputString()).append("\n                    ");
+                fieldInputs.append(col.toInputString()).append("\n");
+//                外键不在列表中显示
+                if ((isFor != null && isFor)) {
+                    continue;
+                }
+                cols.append(",").append(col.toString()).append("\n                ");
             }
         }
         Map<String, String> params = new HashMap<>();
         params.put("$entity$", camel(tableName, false));
-        params.put("$key$", camel(layUiTable.getKeyName(), false));
+        params.put("$key$", camel(table.getKeyName(), false));
         params.put("${entityDesc}", modelDesc);
         params.put("${urlBase}", urlBase);
         params.put("${searchField}", searchField);
+        params.put("${SearchField}", camel(searchField, true));
         params.put("${searchFieldDesc}", searchFieldDesc);
         params.put("${cols}", cols.toString());
         params.put("${fieldInputs}", fieldInputs.toString());
+        if (table.getPriCount() > 1) {
+            params.put("ids", "uuids");
+        }
         InputStream indexTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/index.jsp");
         InputStream editTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/edit.jsp");
         String jspBase = projectDir + "/src/main/webapp/WEB-INF/jsp";
@@ -85,13 +103,13 @@ public class CodeGenerator {
         try {
             boolean result = false;
             switch (type) {
-                case "index":
+                case TYPE_JSP_INDEX:
                     result = instanceFile(indexTemplete, params, indexJsp);
                     break;
-                case "edit":
+                case TYPE_JSP_EDIT:
                     result = instanceFile(editTemplete, params, editJsp);
                     break;
-                case "all":
+                case TYPE_JSP_ALL:
                     result = instanceFile(indexTemplete, params, indexJsp) && instanceFile(editTemplete, params, editJsp);
                 default:
             }
@@ -112,16 +130,19 @@ public class CodeGenerator {
      * service实现类
      * basePackage.service.impl
      *
-     * @param tableName 表名
-     * @param urlBase 模块对外访问url接口前缀
-     * @param searchField 需要模糊搜索的字段
-     * @param searchFieldDesc 需要模糊搜索字段的说明
-     * @param type 指定生成某个java类：controller/service/impl/all
+     * @param urlBase     该模块web访问api前缀
+     * @param tableName   数据表名
+     * @param searchField 模糊搜索字段名驼峰形式（首字母大写）
      * @return 所有代码成功生产返回true，否则返回false
      */
-    public boolean generateControllerService(String tableName, String urlBase, String searchField, String searchFieldDesc, String type) {
-        String modelDescription = tableService.getTableComment(dbName, tableName);
-        LayUiTable table = tableService.getLayUiTable(dbName, tableName);
+    public boolean generateControllerAndService(String tableName, String urlBase, String searchField,
+                                                String searchFieldDesc, String type,String... referencedTable) {
+        String modelDescription = tableService.getTableComment(bundle, dbName, tableName);
+        Assert.notNull(modelDescription, "未找到指定的数据表信息：" + dbName + "." + tableName);
+        LayUiTable table = tableService.getLayUiTable(bundle, dbName, tableName,referencedTable);
+        Assert.notNull(table, "未找到指定的数据表信息：" + dbName + "." + tableName);
+        String keyType = table.getKeyType();
+        Assert.notNull(keyType, "无主键数据表，暂不支持生成代码");
         char separator = File.separatorChar;
         String baseDir = projectDir +
                 separator + "src" +
@@ -129,39 +150,48 @@ public class CodeGenerator {
                 separator + "java" +
                 separator + basePackage.replace('.', separator);
         String entityClassName = camel(tableName, true);
-        String entityName = entityClassName.substring(0, 1).toLowerCase() + entityClassName.substring(1);
+        String entityName = camel(tableName, false);
         Map<String, String> params = new HashMap<>();
         params.put("com.ahjrlc.generator", basePackage);
         params.put("$Template$", entityClassName);
         params.put("${entityDesc}", modelDescription);
         params.put("${urlBase}", urlBase);
         params.put("$template$", entityName);
-        params.put("Object", toJavaType(table.getKeyType()));
-        params.put("$key$", camel(table.getKeyName(), false));
-        params.put("$Key$", camel(table.getKeyName(), true));
+        params.put("Object", toJavaType(keyType));
+        String keyName = table.getKeyName();
+        params.put("$key$", camel(keyName, false));
+        params.put("$Key$", camel(keyName, true));
         params.put("$searchField$", searchField);
+        params.put("$SearchField$", camel(searchField, true));
         params.put("${searchFieldDesc}", searchFieldDesc);
+        params.put("${dataTime}", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(System.currentTimeMillis()));
+        if (table.getPriCount() == 1) {
+            String saveKey = entityName + ".get" + camel(keyName, true) + "()";
+            params.put("${saveKey}", saveKey);
+        } else {
+            params.put("${saveKey}", entityName);
+            params.put("ids", "uuids");
+        }
 
         InputStream controllerTemp = this.getClass().getResourceAsStream("/template/layui/Controller.temp");
         InputStream serviceTemp = this.getClass().getResourceAsStream("/template/layui/Service.temp");
         InputStream serviceTempImpl = this.getClass().getResourceAsStream("/template/layui/ServiceImpl.temp");
-        InputStream indexTemplete = this.getClass().getResourceAsStream("/template/layui/jsp/index.jsp");
         File controllerFile = new File(baseDir + separator + "controller" + separator + entityClassName + "Controller.java");
         File serviceFile = new File(baseDir + separator + "service" + separator + entityClassName + "Service.java");
         File serviceFileImpl = new File(baseDir + separator + "service" + separator + "impl" + separator + entityClassName + "ServiceImpl.java");
         try {
             boolean result = false;
             switch (type) {
-                case "service":
+                case TYPE_SERVICE:
                     result = instanceFile(serviceTemp, params, serviceFile);
                     break;
-                case "impl":
+                case TYPE_SERVICE_IMPL:
                     result = instanceFile(serviceTempImpl, params, serviceFileImpl);
                     break;
-                case "controller":
+                case TYPE_CONTROLLER:
                     result = instanceFile(controllerTemp, params, controllerFile);
                     break;
-                case "all":
+                case TYPE_ALL:
                     result = instanceFile(serviceTemp, params, serviceFile) && instanceFile(serviceTempImpl, params, serviceFileImpl) && instanceFile(controllerTemp, params, controllerFile);
                 default:
 
@@ -173,13 +203,12 @@ public class CodeGenerator {
         }
     }
 
-
     /**
      * 用map中的参数替换文件中的模版文件中的占位符，并写入到目标文件
      *
-     * @param template 模版文件流
-     * @param params 需替换的参数
-     * @return 写入文件是否成功
+     * @param template
+     * @param params
+     * @return
      */
     private boolean instanceFile(InputStream template, Map<String, String> params, File destFile) throws IOException {
         if (template != null && params.size() > 0) {

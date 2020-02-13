@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ahjrlc.test.dao.$Template$Mapper">
-  <resultMap id="BaseResultMap" type="com.ahjrlc.test.model.$Template$">
-    <result column="key" jdbcType="CHAR" property="$Key" />
-    <result column="search_field" jdbcType="VARCHAR" property="$SearchField" />
+<mapper namespace="com.ahjrlc.generator.dao.$Template$Mapper">
+  <resultMap id="BaseResultMap" type="com.ahjrlc.generator.model.$Template$">
+    <id column="key" jdbcType="INTEGER" property="$Key$" />
+    <result column="search_field" jdbcType="VARCHAR" property="$SearchField$" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -66,7 +66,7 @@
   <sql id="Base_Column_List">
     key, search_field
   </sql>
-  <select id="selectByExample" parameterType="com.ahjrlc.test.model.$Template$Example" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.ahjrlc.generator.model.$Template$Example" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -80,36 +80,46 @@
       order by ${orderByClause}
     </if>
   </select>
-  <delete id="deleteByExample" parameterType="com.ahjrlc.test.model.$Template$Example">
+  <select id="selectByPrimaryKey" parameterType="Object" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from template
+    where key = #{$Key$,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="Object">
+    delete from template
+    where key = #{$Key$,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.ahjrlc.generator.model.$Template$Example">
     delete from template
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.ahjrlc.test.model.$Template$">
+  <insert id="insert" parameterType="com.ahjrlc.generator.model.$Template$">
     insert into template (key, search_field)
-    values (#{$Key,jdbcType=CHAR}, #{$SearchField,jdbcType=VARCHAR})
+    values (#{$Key$,jdbcType=INTEGER}, #{$SearchField$,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.ahjrlc.test.model.$Template$">
+  <insert id="insertSelective" parameterType="com.ahjrlc.generator.model.$Template$">
     insert into template
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="$Key != null">
+      <if test="$Key$ != null">
         key,
       </if>
-      <if test="$SearchField != null">
+      <if test="$SearchField$ != null">
         search_field,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="$Key != null">
-        #{$Key,jdbcType=CHAR},
+      <if test="$Key$ != null">
+        #{$Key$,jdbcType=INTEGER},
       </if>
-      <if test="$SearchField != null">
-        #{$SearchField,jdbcType=VARCHAR},
+      <if test="$SearchField$ != null">
+        #{$SearchField$,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.ahjrlc.test.model.$Template$Example" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.ahjrlc.generator.model.$Template$Example" resultType="java.lang.Long">
     select count(*) from template
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -118,11 +128,11 @@
   <update id="updateByExampleSelective" parameterType="map">
     update template
     <set>
-      <if test="record.$Key != null">
-        key = #{record.$Key,jdbcType=CHAR},
+      <if test="record.$Key$ != null">
+        key = #{record.$Key$,jdbcType=INTEGER},
       </if>
-      <if test="record.$SearchField != null">
-        search_field = #{record.$SearchField,jdbcType=VARCHAR},
+      <if test="record.$SearchField$ != null">
+        search_field = #{record.$SearchField$,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -131,10 +141,24 @@
   </update>
   <update id="updateByExample" parameterType="map">
     update template
-    set key = #{record.$Key,jdbcType=CHAR},
-      search_field = #{record.$SearchField,jdbcType=VARCHAR}
+    set key = #{record.$Key$,jdbcType=INTEGER},
+      search_field = #{record.$SearchField$,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ahjrlc.generator.model.$Template$">
+    update template
+    <set>
+      <if test="$SearchField$ != null">
+        search_field = #{$SearchField$,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where key = #{$Key$,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ahjrlc.generator.model.$Template$">
+    update template
+    set search_field = #{$SearchField$,jdbcType=VARCHAR}
+    where key = #{$Key$,jdbcType=INTEGER}
   </update>
 </mapper>

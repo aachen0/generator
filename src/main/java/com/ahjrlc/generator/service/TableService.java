@@ -1,9 +1,10 @@
 package com.ahjrlc.generator.service;
 
-import com.ahjrlc.util.LayUiTable;
+import com.ahjrlc.generator.util.LayUiTable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * 读取数据表信息
@@ -21,19 +22,21 @@ public interface TableService {
 
     /**
      * 列出数据库表名为tableName的数据库中所有表
-     *
+     * @param bundle 数据库链接配置
      * @param dbName    数据库名
      * @param tableName 表名
+     * @param referencedTable 外键表名
      * @return 列
      */
-    LayUiTable getLayUiTable(String dbName, String tableName);
+    LayUiTable getLayUiTable(ResourceBundle bundle,String dbName, String tableName,String... referencedTable);
 
     /**
      * 列出数据库表名为tableName的表的comment
      *
+     * @param bundle    数据库连接配置文件
      * @param dbName    数据库名
      * @param tableName 表名
-     * @return
+     * @return 数据库表注释
      */
-    String getTableComment(String dbName, String tableName);
+    String getTableComment(ResourceBundle bundle, String dbName, String tableName);
 }

@@ -28,24 +28,18 @@
         </div>
     </div>
 </div>
-<script src="${ctx}/static/js/common.js" charset="utf-8"></script>
 <script type="text/javascript">
-    layui.use(['form', 'jquery', 'layer', 'upload'], function () {
+    layui.use(['form', 'jquery', 'layer'], function () {
         var form = layui.form,
-            $ = layui.jquery,
-            layer = layui.layer;
+            $ = layui.jquery;
         form.on('submit(save)', function (data) {
-            var field = data.field;
+            console.log(data.field);
             $.ajax({
                 url: "${ctx}${urlBase}/edit/submit",
-                data: field,
+                data: data.field,
                 method: 'post',
                 success: function (res) {
-                    var message = res.indexOf('add')>0?'添加成功':'修改成功';
-                    layer.alert(message, function (index) {
-                        parent.layer.close(index);
-                        parent.location.reload();
-                    })
+                    doResult(res,true);
                 }
             });
             return false;

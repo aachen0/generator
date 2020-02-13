@@ -16,15 +16,16 @@ public interface $Template$Service {
      * @param $key$ 主键
      * @return ${entityDesc}信息
      */
-    $Template$ getBy$Key$(Object $key$);
+    $Template$ getByKey(Object $key$);
 
     /**
      * 保存一个${entityDesc}信息,根据主键判断添加还是修改
+     * 添加成功1/失败-1，编辑成功2/失败0
      *
      * @param $template$ ${entityDesc}对象
-     * @return 添加或修改结果：add：1/edit：1
+     * @return 添加或修改结果：add：1/-1,/edit：2/0
      */
-    String saveBy$Key$($Template$ $template$);
+    Integer saveByKey($Template$ $template$);
 
     /**
      * 根据主键删除指定${entityDesc}
@@ -32,24 +33,25 @@ public interface $Template$Service {
      * @param $key$ 主键
      * @return 删除记录数
      */
-    Integer delBy$Key$(Object $key$);
+    Integer delByKey(Object $key$);
 
     /**
      * 批量删除${entityDesc}
+     *
      * @param $key$s ${entityDesc}id
      * @return 成功删除记录数
      */
-    int delBy$Key$s(List<Object> $key$s);
+    int delByKeys(List<Object> $key$s);
 
     /**
      * 分页列出符合条件的${entityDesc}
      *
-     * @param page               分页第几页
-     * @param limit              分页每页大小
-     * @param part$searchField$  $searchField$模糊查询
+     * @param page  分页第几页
+     * @param limit 分页每页大小
+     * @param search 筛选条件
      * @return 符合条件的${entityDesc}列表
      */
-    List<$Template$> listPaged(Integer page, Integer limit, String part$searchField$);
+    List<$Template$> listPaged(Integer page, Integer limit, $Template$ search);
 
     /**
      * 列出所有${entityDesc}

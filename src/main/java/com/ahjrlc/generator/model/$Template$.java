@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class $Template$ implements Serializable {
     private Object $Key$;
 
-    private String $searchField$;
+    private Object $SearchField$;
 
     private static final long serialVersionUID = 1L;
 
@@ -17,11 +17,11 @@ public class $Template$ implements Serializable {
         this.$Key$ = $Key$;
     }
 
-    public String get$searchField$() {
-        return $searchField$;
+    public Object get$SearchField$() {
+        return $SearchField$;
     }
 
-    public void set$searchField$(String $searchField$) {
-        this.$searchField$ = $searchField$ == null ? null : $searchField$.trim();
+    public void set$SearchField$(Object $SearchField$) {
+        this.$SearchField$ = $SearchField$;
     }
 }

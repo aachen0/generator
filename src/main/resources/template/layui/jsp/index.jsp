@@ -15,7 +15,7 @@
 <div class="x-nav">
 	<span class="layui-breadcrumb">
         <a href="">首页</a>
-        <a href="">${entityDesc}管理</a>
+        <a href="${urlBase}/index">${entityDesc}管理</a>
      </span>
     <a class="layui-btn layui-btn-sm refresh" href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon layui-icon-refresh"></i>
@@ -26,14 +26,14 @@
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body ">
-                    <form class="layui-form layui-col-space5" action="${ctx}${urlBase}/index">
+                    <form class="layui-form layui-col-space5">
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="part${searchField}" id="part${searchField}"
+                            <input type="text" name="${searchField}"
                                    placeholder="${searchFieldDesc}搜索"
                                    autocomplete="off"
-                                   class="layui-input" value="${part${searchField}}"></div>
+                                   class="layui-input"></div>
                         <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                            <button class="layui-btn" lay-submit="" lay-filter="search">
                                 <i class="layui-icon">&#xe615;</i></button>
                         </div>
                     </form>
@@ -55,44 +55,30 @@
         </div>
     </script>
 </div>
-<script src="${ctx}/static/js/cookies.js"></script>
 <script>
-    layui.use(['table', 'util', 'upload', 'layer'], function () {
+    layui.use(['table', 'upload', 'layer', 'form'], function () {
         var table = layui.table,
-            util = layui.util,
-            layer = layui.layer;
-        // 显示跳转到本页前的操作结果
-        if (${empty result?0:1}) {
-            layer.msg('${result}');
-        }
-        // 从cookie中取分页大小，如果没有值，则使用默认10
-        var pageSizeLocal = get_cookie("pageSizeLocal");
-        var pageSize = (pageSizeLocal > 0) ? pageSizeLocal : 10;
+            layer = layui.layer,
+            form = layui.form,
+            open_width = 600,// 弹窗宽度度
+            open_height = 500;// 弹窗高度
         // 渲染列表
-        table.render({
+        var $entity$TableIns = table.render({
             elem: '#list'
             , url: '${ctx}${urlBase}/list/paged'
-            , where: {
-                part${searchField}: $("#part${searchField}").val()
-            }
             , toolbar: '#toolbar'
             , cols: [[
-                {type: 'checkbox'}
-                ${cols}
-                <%-- 上面开始对应的是实体类的属性名 --%>
-                , {fixed: 'right', width: 190, align: 'center', toolbar: '#option'}
+                {type: 'checkbox'},
+                {type: 'numbers', title: '序号', width: 60}
+                ${cols}, {fixed: 'right', width: 190, align: 'center', toolbar: '#option'}
             ]]
             , page: true
-            , limit: pageSize
+            , limit: localLimit
             , limits: layui_limits
             , even: true
             , size: 'sm'
             , done: function (res, curr, count) {
-                // 如果分页大小发生变化，此回掉函数更新cookie中的分页大小
-                var newLimit = (res.limit);
-                if (pageSize !== newLimit) {
-                    document.cookie = "pageSizeLocal=" + newLimit;
-                }
+                updateLimit(res.limit);
             }
         });
         //头工具栏事件
@@ -101,25 +87,27 @@
             var data = checkStatus.data;
             var selIDs = [];
             for (var i = 0; i < data.length; i++) {
+                //todo 下面的data[i].$key$根据实际情况更改
                 selIDs.push(data[i].$key$);
             }
             switch (obj.event) {
                 case 'delete':
-                    layer.confirm('真的删除选中的' + data.length + "条记录么？", function (index) {
-                        $.ajax({
-                            url: "${ctx}${urlBase}/del/batch?$key$s=" + selIDs,
-                            method: 'post',
-                            success: function (res) {
-                                layer.alert(res, function (index) {
-                                    layer.close(index);
-                                    location.replace(location.href);
-                                });
-                            }
+                    if (data.length) {
+                        layer.confirm('真的删除选中的' + data.length + "条记录么？", function (index) {
+                            $.ajax({
+                                url: "${ctx}${urlBase}/del?ids=" + selIDs,
+                                method: 'post',
+                                success: function (res) {
+                                    delAfter(res,$entity$TableIns);
+                                }
+                            });
                         });
-                    });
+                    } else {
+                        layer.msg("请选择需要删除的记录");
+                    }
                     break;
                 case 'add':
-                    xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit');
+                    xadmin.open('添加${entityDesc}', '${ctx}${urlBase}/edit', open_width, open_height,false,$entity$TableIns);
                     break;
             }
         });
@@ -129,19 +117,24 @@
             if (obj.event === 'del') {
                 layer.confirm('真的删除这行记录么？', function (index) {
                     $.ajax({
-                        url: "${ctx}${urlBase}/del?$key$=" + data.$key$,
+                        //todo 下面的data.$key$根据实际情况更改
+                        url: "${ctx}${urlBase}/del?ids=" + data.$key$,
                         method: 'post',
                         success: function (res) {
-                            layer.alert(res, function (index) {
-                                layer.close(index);
-                                location.replace(location.href);
-                            });
+                            delAfter(res,$entity$TableIns);
                         }
                     });
                 });
             } else if (obj.event === 'edit') {
-                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$)
+                //todo 下面的data.$key$根据实际情况更改
+                xadmin.open('编辑${entityDesc}', '${ctx}${urlBase}/edit?$key$=' + data.$key$, open_width, open_height,false,$entity$TableIns);
             }
+        });
+        form.on('submit(search)', function (d) {
+            $entity$TableIns.reload({
+                where: d.field
+            });
+            return false;
         });
     });
 </script>

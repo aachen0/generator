@@ -1,9 +1,7 @@
-package com.ahjrlc.util;
+package com.ahjrlc.generator.util;
 
-import com.gitee.aachen0.util.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
@@ -113,4 +111,36 @@ public class JdbcUtil {
         }
     }
 
+    /**
+     * 根据Properties文件生成建表语句&lt;br/&gt;
+     * Properties示例&lt;br/&gt;
+     * tableName=user&lt;br/&gt;
+     * #格式为:字段名=类型，最小值，最大值&lt;br/&gt;
+     * user_id=int,,&lt;br/&gt;
+     * user_age=int,,
+     */
+    private static void createGenerator(Properties table) {
+        Set<String> fields = table.stringPropertyNames();
+        String tableName = table.getProperty("tableName");
+        // 移除表名，剩下的为字段名
+        fields.remove("tableName");
+        // 字段个数
+        int length = fields.size();
+        StringBuffer sql =
+                new StringBuffer("drop table if exists ").append(tableName).append(";\r\ncreate table ").append(tableName).append(
+                        "(");
+        String[] ss = new String[length];
+        fields.toArray(ss);
+        for (int i = 0; i < length; i++) {
+            String[] args = table.getProperty(ss[i]).split("/");
+            String type = args[0].toLowerCase();
+            if ("address".equals(type) || "name".equals(type) || "phone".equals(type)) {
+                type = "varchar(20)";
+            }
+            sql.append("\r\n").append(ss[i]).append(" ").append(type).append((i == length - 1) ? ")" : ",");
+        }
+        sql.append(";");
+        // 打印出来
+        System.out.println(sql);
+    }
 }
