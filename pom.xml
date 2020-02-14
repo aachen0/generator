@@ -20,12 +20,6 @@
         <jackson.version>2.9.5</jackson.version>
     </properties>
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>com.ahjrlc</groupId>-->
-            <!--<artifactId>common</artifactId>-->
-            <!--<version>1.0.1</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
         <!--jsp需要的依赖，tomcat自带，不需要打包-->
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
@@ -191,26 +185,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.ahjrlc</groupId>
             <artifactId>common</artifactId>
             <version>1.0.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
-    <repositories>
-        <repository>
-            <id>release</id>
-            <url>http://172.18.0.10:8081/repository/maven-releases/</url>
-            <name>local</name>
-        </repository>
-    </repositories>
     <distributionManagement>
         <!--pom.xml这里<id> 和 settings.xml 配置 <id> 对应  -->
         <repository>
