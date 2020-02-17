@@ -38,7 +38,8 @@ public class CodeGenerator {
 
     public CodeGenerator(String config) {
         this.bundle = ResourceBundle.getBundle(config);
-        this.projectDir = bundle.getString("project.base.dir");
+//        this.projectDir = bundle.getString("project.base.dir");
+        this.projectDir = System.getProperty("user.dir");
         this.basePackage = bundle.getString("base.package");
         String url = bundle.getString("jdbc.url");
         this.dbName = parseDbName(url);
