@@ -12,8 +12,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.ahjrlc.common.CommonUtil.camel;
-import static com.ahjrlc.common.JdbcUtil.parseDbName;
+import static com.ahjrlc.common.util.CommonUtil.camel;
+import static com.ahjrlc.common.util.JdbcUtil.parseDbName;
 import static com.ahjrlc.generator.util.CommonUtil.toJavaType;
 
 /**

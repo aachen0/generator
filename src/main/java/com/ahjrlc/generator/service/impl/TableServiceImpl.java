@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.ahjrlc.common.CommonUtil.camel;
+import static com.ahjrlc.common.util.CommonUtil.camel;
 
 /**
  * @author aachen0

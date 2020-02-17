@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.ahjrlc.common.CommonUtil.isEmpty;
+import static com.ahjrlc.common.util.CommonUtil.isEmpty;
 
 
 @Service
