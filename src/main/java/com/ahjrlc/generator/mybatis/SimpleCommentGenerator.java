@@ -135,7 +135,7 @@ public class SimpleCommentGenerator implements CommentGenerator {
         topLevelClass.addImportedType("io.swagger.annotations.*");
         if (hasDateField(introspectedTable)) {
             topLevelClass.addImportedType("org.springframework.format.annotation.DateTimeFormat");
-            topLevelClass.addImportedType("com.ahjrlc.common.CommonConst");
+            topLevelClass.addImportedType("com.ahjrlc.common.consts.CommonConst");
         }
         topLevelClass.addAnnotation("@ApiModel(\"" + introspectedTable.getRemarks() + "\")");
     }
