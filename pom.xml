@@ -10,7 +10,7 @@
     <name>generator</name>
     <description>传统ssm web项目代码生产器</description>
     <properties>
-        <spring.version>5.0.16.RELEASE</spring.version>
+        <spring.version>5.2.4.RELEASE</spring.version>
         <mysql.version>5.1.47</mysql.version>
         <mybatis.version>3.4.6</mybatis.version>
         <shiro.version>1.5.1</shiro.version>
