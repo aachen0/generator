@@ -21,6 +21,10 @@ import java.util.Set;
 
 import static org.mybatis.generator.internal.util.StringUtility.isTrue;
 
+/**
+ *对mybatis的注释类进行重写，增加需要的swagger注解
+ * @author aachen0
+ */
 public class SimpleCommentGenerator implements CommentGenerator {
 
     private boolean suppressDate;
@@ -82,8 +86,10 @@ public class SimpleCommentGenerator implements CommentGenerator {
         field.addAnnotation("@ApiModelProperty(\"" + introspectedColumn.getRemarks() + "\")");
         if (introspectedColumn.getJdbcType() == 91) {
             field.addAnnotation("@DateTimeFormat(pattern = CommonConst.DATE_PATTERN)");
+            field.addAnnotation("@JsonFormat(pattern = CommonConst.DATE_PATTERN)");
         } else if (introspectedColumn.getJdbcType() == 93) {
             field.addAnnotation("@DateTimeFormat(pattern = CommonConst.DATE_TIME_PATTERN)");
+            field.addAnnotation("@JsonFormat(pattern = CommonConst.DATE_TIME_PATTERN)");
         }
     }
 
