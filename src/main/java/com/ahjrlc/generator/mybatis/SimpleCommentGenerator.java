@@ -142,6 +142,7 @@ public class SimpleCommentGenerator implements CommentGenerator {
         if (hasDateField(introspectedTable)) {
             topLevelClass.addImportedType("org.springframework.format.annotation.DateTimeFormat");
             topLevelClass.addImportedType("com.ahjrlc.common.consts.CommonConst");
+            topLevelClass.addImportedType("com.fasterxml.jackson.annotation.JsonFormat");
         }
         topLevelClass.addAnnotation("@ApiModel(\"" + introspectedTable.getRemarks() + "\")");
     }
@@ -396,7 +397,8 @@ public class SimpleCommentGenerator implements CommentGenerator {
      */
     @Override
     public void addGeneralMethodAnnotation(Method method, IntrospectedTable introspectedTable, Set<FullyQualifiedJavaType> imports) {
-        imports.add(new FullyQualifiedJavaType("javax.annotation.Generated")); //$NON-NLS-1$
+        imports.add(new FullyQualifiedJavaType("javax.annotation.Generated"));
+        //$NON-NLS-1$
         String comment = "Source Table: " + introspectedTable.getFullyQualifiedTable().toString(); //$NON-NLS-1$
         method.addAnnotation(getGeneratedAnnotation(comment));
     }
