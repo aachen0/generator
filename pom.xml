@@ -11,7 +11,7 @@
     <description>传统ssm web项目代码生产器</description>
     <properties>
         <spring.version>5.0.16.RELEASE</spring.version>
-        <mysql.version>5.1.47</mysql.version>
+        <mysql.version>8.0.16</mysql.version>
         <mybatis.version>3.4.6</mybatis.version>
         <shiro.version>1.5.1</shiro.version>
         <swagger.version>2.9.2</swagger.version>
